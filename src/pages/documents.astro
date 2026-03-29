@@ -4,11 +4,15 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout title="Documents | Alice's Blog">
 	<h1>Documents</h1>
-	<p>Files you can download or view:</p>
+	<p>Are you looking for any of these?</p>
 	<ul>
-		<li><a href="/docs/cv.pdf">CV (PDF)</a></li>
-		<li><a href="/docs/notes.pdf">Notes (PDF)</a></li>
+		<li><strong>CV:</strong> <a href="/docs/cv.pdf">Tianyou Ma's CV</a></li>
 	</ul>
+	<p class="section-title">Notes:</p>
+	<p class="notes-blurb">
+		There are no notes uploaded yet. I plan to upload my personal notes from this semester on
+		<em>Supersymmetry, Localisation, and Instanton Counting on Gauge Theory</em> when they are ready.
+	</p>
 </Layout>
 
 <style>
@@ -18,5 +22,13 @@ import Layout from '../layouts/Layout.astro';
 	}
 	li {
 		margin: 0.35em 0;
+	}
+	.section-title {
+		margin-top: 1.5rem !important;
+		font-weight: 600;
+		color: #1a1a1a;
+	}
+	.notes-blurb {
+		margin-top: 0.5rem;
 	}
 </style>
