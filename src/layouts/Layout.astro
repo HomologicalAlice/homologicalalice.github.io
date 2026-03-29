@@ -21,6 +21,8 @@ const { title = "Alice's Blog" } = Astro.props;
 		<ClientRouter />
 	</head>
 	<body>
+		<div id="wallpaper-a" class="wallpaper" transition:persist></div>
+		<div id="wallpaper-b" class="wallpaper" transition:persist></div>
 		<header>
 			<nav>
 				<a href="/">Home</a>
@@ -36,6 +38,54 @@ const { title = "Alice's Blog" } = Astro.props;
 		<button id="bgm-btn" aria-label="Toggle music" transition:persist>&#9835; Play</button>
 		<script>
 			document.addEventListener('astro:page-load', () => {
+				if (!(window as any).__wallpaperRotatorStarted) {
+					(window as any).__wallpaperRotatorStarted = true;
+
+					const a = document.getElementById('wallpaper-a') as HTMLDivElement | null;
+					const b = document.getElementById('wallpaper-b') as HTMLDivElement | null;
+					if (a && b) {
+						const wallpapers = [
+							'/images/alice1.avif',
+							'/images/alice2.avif',
+							'/images/alice3.avif',
+							'/images/alice4.avif',
+						];
+
+						let i = 0;
+						let showingA = true;
+
+						function setLayer(el: HTMLDivElement, url: string) {
+							el.style.backgroundImage = `url('${url}')`;
+							const img = new Image();
+							img.src = url;
+						}
+
+						function nextWallpaper() {
+							i = (i + 1) % wallpapers.length;
+							const show = showingA ? b : a;
+							const hide = showingA ? a : b;
+							setLayer(show, wallpapers[i]);
+							show.style.opacity = '1';
+							hide.style.opacity = '0';
+							showingA = !showingA;
+						}
+
+						setLayer(a, wallpapers[i]);
+						setLayer(b, wallpapers[i]);
+						a.style.opacity = '1';
+						b.style.opacity = '0';
+
+						let timer = setInterval(nextWallpaper, 30_000);
+
+						document.addEventListener('click', (e) => {
+							if ((e.target as HTMLElement).closest('a, button, main')) return;
+							clearInterval(timer);
+							nextWallpaper();
+							timer = setInterval(nextWallpaper, 30_000);
+						});
+					}
+				}
+
 				const audio = document.getElementById('bgm') as HTMLAudioElement;
 				const btn = document.getElementById('bgm-btn')!;
 				if (!audio || !btn) return;
@@ -76,18 +126,29 @@ const { title = "Alice's Blog" } = Astro.props;
 		font-family: system-ui, sans-serif;
 		background: url('/images/bg.avif') center/cover no-repeat fixed;
 		background-color: #1a1a2e;
-		position: relative;
+	}
+	.wallpaper {
+		position: fixed;
+		inset: 0;
+		z-index: 1;
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		opacity: 0;
+		transition: opacity 1.5s ease-in-out;
+		will-change: opacity;
 	}
 	body::before {
 		content: '';
 		position: fixed;
 		inset: 0;
 		background: rgba(0, 0, 0, 0.3);
-		z-index: 0;
+		z-index: 2;
+		pointer-events: none;
 	}
 	header {
 		position: relative;
-		z-index: 1;
+		z-index: 3;
 		padding: 1.25rem 2rem;
 	}
 	nav {
@@ -107,11 +168,11 @@ const { title = "Alice's Blog" } = Astro.props;
 	}
 	main {
 		position: relative;
-		z-index: 1;
+		z-index: 3;
 		max-width: 38rem;
 		margin: 2rem auto 3rem;
 		padding: 2.5rem 2.5rem 3rem;
-		background: rgba(255, 255, 255, 0.92);
+		background: rgba(255, 255, 255, 0.80);
 		border-radius: 1rem;
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 		backdrop-filter: blur(6px);
