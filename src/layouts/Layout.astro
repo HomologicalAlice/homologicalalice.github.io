@@ -1,0 +1,158 @@
+---
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+	title?: string;
+}
+const { title = "Alice's Blog" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" style="background:#1a1a2e">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="preload" href="/images/bg.avif" as="image" type="image/avif" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<ClientRouter />
+	</head>
+	<body>
+		<header>
+			<nav>
+				<a href="/">Home</a>
+				<a href="/posts/">Posts</a>
+				<a href="/documents">Documents</a>
+				<a href="/about">About</a>
+			</nav>
+		</header>
+		<main>
+			<slot />
+		</main>
+		<audio id="bgm" src="/audio/bgm.mp3" loop preload="none" transition:persist></audio>
+		<button id="bgm-btn" aria-label="Toggle music" transition:persist>&#9835; Play</button>
+		<script>
+			document.addEventListener('astro:page-load', () => {
+				const audio = document.getElementById('bgm') as HTMLAudioElement;
+				const btn = document.getElementById('bgm-btn')!;
+				if (!audio || !btn) return;
+
+				function updateBtn() {
+					btn.textContent = audio.paused ? '\u266B Play' : '\u266B Pause';
+				}
+
+				if (localStorage.getItem('bgm') === 'playing' && audio.paused) {
+					audio.play().then(updateBtn).catch(() => {});
+				}
+				updateBtn();
+
+				btn.onclick = () => {
+					if (audio.paused) {
+						audio.play().then(() => {
+							localStorage.setItem('bgm', 'playing');
+							updateBtn();
+						});
+					} else {
+						audio.pause();
+						localStorage.setItem('bgm', 'paused');
+						updateBtn();
+					}
+				};
+			});
+		</script>
+	</body>
+</html>
+
+<style is:global>
+	html {
+		min-height: 100%;
+	}
+	body {
+		margin: 0;
+		min-height: 100vh;
+		font-family: system-ui, sans-serif;
+		background: url('/images/bg.avif') center/cover no-repeat fixed;
+		background-color: #1a1a2e;
+		position: relative;
+	}
+	body::before {
+		content: '';
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.3);
+		z-index: 0;
+	}
+	header {
+		position: relative;
+		z-index: 1;
+		padding: 1.25rem 2rem;
+	}
+	nav {
+		display: flex;
+		gap: 1.5rem;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+	nav a {
+		color: rgba(255, 255, 255, 0.85);
+		text-decoration: none;
+		font-size: 0.95rem;
+		letter-spacing: 0.02em;
+	}
+	nav a:hover {
+		color: #fff;
+	}
+	main {
+		position: relative;
+		z-index: 1;
+		max-width: 38rem;
+		margin: 2rem auto 3rem;
+		padding: 2.5rem 2.5rem 3rem;
+		background: rgba(255, 255, 255, 0.92);
+		border-radius: 1rem;
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+		backdrop-filter: blur(6px);
+	}
+	main h1 {
+		margin: 0 0 0.5rem;
+		font-size: 1.75rem;
+		font-weight: 600;
+		color: #1a1a1a;
+	}
+	main p {
+		margin: 0;
+		color: #444;
+		line-height: 1.7;
+	}
+	main p + p {
+		margin-top: 1em;
+	}
+	main a {
+		color: #2563eb;
+		text-decoration: none;
+	}
+	main a:hover {
+		text-decoration: underline;
+	}
+	#bgm-btn {
+		position: fixed;
+		bottom: 1.25rem;
+		right: 1.25rem;
+		z-index: 10;
+		padding: 0.5rem 1rem;
+		border: none;
+		border-radius: 2rem;
+		background: rgba(255, 255, 255, 0.15);
+		backdrop-filter: blur(8px);
+		color: rgba(255, 255, 255, 0.85);
+		font-size: 0.85rem;
+		cursor: pointer;
+		transition: background 0.2s;
+	}
+	#bgm-btn:hover {
+		background: rgba(255, 255, 255, 0.25);
+	}
+</style>

@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const latest = posts[0];
+---
+
+<Layout title="Tianyou Ma's Blog">
+	<h1>Tianyou Ma's Blog</h1>
+	<p>
+		I am an Honours student in Mathematics at the Australian National University, working under the
+		supervision of Brett Parker. My current work focuses on understanding the integral cohomology ring
+		structure of polygon spaces through the Kirwan map.
+	</p>
+	<p>
+		More broadly, I am interested in symplectic geometry and symplectic topology, Morse
+		theory and Floer theory, geometric invariant theory, and aspects of mathematical physics, especially TQFT and
+		homological mirror symmetry.
+	</p>
+	<p>I expect to graduate at the end of 2026. After that, i have no idea where i will go. </p>
+	<p>
+		At present, I am on leave while dealing with mental health difficulties, but I hope to recover and
+		return to my work soon.
+	</p>
+	{
+		latest && (
+			<p>
+				<a href={`/posts/${latest.id}`}>Latest post →</a>
+			</p>
+		)
+	}
+</Layout>

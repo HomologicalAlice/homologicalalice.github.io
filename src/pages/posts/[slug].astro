@@ -1,0 +1,58 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog');
+	return posts.map((post) => ({
+		params: { slug: post.id },
+		props: { post },
+	}));
+}
+
+interface Props {
+	post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const pageTitle = `${post.data.title} | Alice's Blog`;
+const formattedDate = post.data.pubDate.toLocaleDateString('en-US', {
+	year: 'numeric',
+	month: 'long',
+	day: 'numeric',
+});
+---
+
+<Layout title={pageTitle}>
+	<article class="post">
+		<h1>{post.data.title}</h1>
+		<time datetime={post.data.pubDate.toISOString()}>{formattedDate}</time>
+		<div class="body">
+			<Content />
+		</div>
+		<p class="back"><a href="/posts/">← All posts</a></p>
+	</article>
+</Layout>
+
+<style>
+	.post time {
+		display: block;
+		color: #666;
+		font-size: 0.9rem;
+		margin: 0 0 1rem;
+	}
+	.body :global(p) {
+		margin: 0 0 1em;
+		color: #444;
+		line-height: 1.5;
+	}
+	.body :global(p:last-child) {
+		margin-bottom: 0;
+	}
+	.back {
+		margin-top: 1.5rem;
+	}
+</style>
