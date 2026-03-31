@@ -3,8 +3,10 @@ import { ClientRouter } from 'astro:transitions';
 
 interface Props {
 	title?: string;
+	/** Narrower card for long-form / math posts; default keeps the wider blog layout. */
+	contentLayout?: 'default' | 'reading';
 }
-const { title = "Alice's Blog" } = Astro.props;
+const { title = "Tianyou Ma's Blog", contentLayout = 'default' } = Astro.props;
 ---
 
 <!doctype html>
@@ -31,7 +33,7 @@ const { title = "Alice's Blog" } = Astro.props;
 				<a href="/about">About</a>
 			</nav>
 		</header>
-		<main>
+		<main class:list={[{ 'main--reading': contentLayout === 'reading' }]}>
 			<slot />
 		</main>
 		<audio id="bgm" src="/audio/bgm.mp3" loop preload="none" transition:persist></audio>
@@ -61,17 +63,21 @@ const { title = "Alice's Blog" } = Astro.props;
 						}
 
 						function nextWallpaper() {
+							document.body.style.backgroundImage = `url('${wallpapers[i]}')`;
 							i = (i + 1) % wallpapers.length;
-							const show = showingA ? b : a;
-							const hide = showingA ? a : b;
-							setLayer(show, wallpapers[i]);
-							show.style.opacity = '1';
-							hide.style.opacity = '0';
+							const front = showingA ? a : b;
+							const back = showingA ? b : a;
+							back.style.transition = 'none';
+							back.style.opacity = '0';
+							setLayer(back, wallpapers[i]);
+							void back.offsetWidth;
+							back.style.transition = 'opacity 1.5s ease-in-out';
+							back.style.opacity = '1';
+							setTimeout(() => { front.style.opacity = '0'; }, 100);
 							showingA = !showingA;
 						}
 
 						setLayer(a, wallpapers[i]);
-						setLayer(b, wallpapers[i]);
 						a.style.opacity = '1';
 						b.style.opacity = '0';
 
@@ -177,6 +183,16 @@ const { title = "Alice's Blog" } = Astro.props;
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 		backdrop-filter: blur(6px);
 	}
+	main.main--reading {
+		max-width: 52rem;
+		padding: 2.5rem 3rem 3rem;
+	}
+	@media (max-width: 56rem) {
+		main.main--reading {
+			max-width: 100%;
+			padding: 2rem 1.25rem 2.5rem;
+		}
+	}
 	main h1 {
 		margin: 0 0 0.5rem;
 		font-size: 1.75rem;
@@ -198,6 +214,122 @@ const { title = "Alice's Blog" } = Astro.props;
 	main a:hover {
 		text-decoration: underline;
 	}
+	/* --- Display math --- */
+	main .katex-display {
+		margin: 1.25em 0;
+		overflow-x: auto;
+		overflow-y: hidden;
+		padding: 0.25em 0;
+	}
+	main .katex-display > .katex {
+		white-space: nowrap;
+	}
+	main .katex {
+		font-size: 1.05em;
+	}
+
+	/* --- Theorem / Definition / Remark blocks (blockquotes) --- */
+	main blockquote {
+		margin: 1.25em 0;
+		padding: 0.9em 1.1em;
+		border-left: 3px solid #6366f1;
+		background: rgba(99, 102, 241, 0.06);
+		border-radius: 0 0.4rem 0.4rem 0;
+	}
+	main blockquote p {
+		margin: 0;
+		color: #333;
+		line-height: 1.65;
+	}
+	main blockquote p + p {
+		margin-top: 0.6em;
+	}
+	main blockquote p:first-child strong:first-child {
+		color: #4338ca;
+	}
+
+	/* --- Section headings inside posts --- */
+	main h2 {
+		margin: 2rem 0 0.75rem;
+		padding-bottom: 0.3rem;
+		font-size: 1.35rem;
+		font-weight: 600;
+		color: #1a1a1a;
+		border-bottom: 1px solid #e5e7eb;
+	}
+	main h3 {
+		margin: 1.5rem 0 0.5rem;
+		font-size: 1.15rem;
+		font-weight: 600;
+		color: #333;
+	}
+
+	/* --- Lists --- */
+	main ul, main ol {
+		margin: 0.75em 0;
+		padding-left: 1.5em;
+		color: #444;
+		line-height: 1.65;
+	}
+	main li {
+		margin: 0.3em 0;
+	}
+	main li p {
+		margin: 0;
+	}
+	main blockquote ul,
+	main blockquote ol {
+		margin: 0.5em 0;
+		padding-left: 1.25em;
+	}
+
+	/* --- Tables --- */
+	main table {
+		width: 100%;
+		border-collapse: collapse;
+		margin: 1em 0;
+		font-size: 0.92rem;
+		line-height: 1.5;
+	}
+	main th, main td {
+		padding: 0.45em 0.7em;
+		border: 1px solid #d1d5db;
+		text-align: left;
+		color: #333;
+	}
+	main th {
+		background: rgba(0, 0, 0, 0.04);
+		font-weight: 600;
+	}
+
+	/* --- Inline code --- */
+	main code {
+		font-size: 0.88em;
+		background: rgba(0, 0, 0, 0.06);
+		padding: 0.15em 0.35em;
+		border-radius: 0.25rem;
+		font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+	}
+	main pre {
+		margin: 1em 0;
+		padding: 1em;
+		overflow-x: auto;
+		background: rgba(0, 0, 0, 0.04);
+		border-radius: 0.5rem;
+	}
+	main pre code {
+		background: none;
+		padding: 0;
+		font-size: 0.88em;
+	}
+
+	/* --- Horizontal rule --- */
+	main hr {
+		margin: 2rem 0;
+		border: none;
+		border-top: 1px solid #e5e7eb;
+	}
+
 	#bgm-btn {
 		position: fixed;
 		bottom: 1.25rem;
@@ -215,5 +347,227 @@ const { title = "Alice's Blog" } = Astro.props;
 	}
 	#bgm-btn:hover {
 		background: rgba(255, 255, 255, 0.25);
+	}
+
+	/* ===== Posts list page ===== */
+	.sort-bar {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin: 0 0 1.25rem;
+	}
+	.sort-label {
+		font-size: 0.82rem;
+		color: #888;
+		margin-right: 0.15rem;
+	}
+	.sort-btn {
+		padding: 0.2rem 0.65rem;
+		border: 1px solid #d1d5db;
+		border-radius: 999px;
+		background: transparent;
+		color: #666;
+		font-size: 0.78rem;
+		cursor: pointer;
+		transition: background 0.15s, color 0.15s, border-color 0.15s;
+	}
+	.sort-btn:hover {
+		background: rgba(0,0,0,0.05);
+	}
+	.sort-btn.active {
+		background: #4338ca;
+		color: #fff;
+		border-color: #4338ca;
+	}
+	.post-list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.post-list li {
+		padding: 0.6rem 0;
+		border-bottom: 1px solid #f0f0f0;
+	}
+	.post-list li:last-child {
+		border-bottom: none;
+	}
+	.post-list a {
+		display: block;
+		font-weight: 500;
+		color: #1a1a1a;
+		margin-bottom: 0.2rem;
+	}
+	.post-list a:hover {
+		color: #4338ca;
+	}
+	.post-list .dates {
+		display: block;
+		font-size: 0.8rem;
+		color: #888;
+		line-height: 1.4;
+	}
+	.post-list .edited {
+		color: #aaa;
+	}
+
+	/* ===== Single post page ===== */
+	.toolbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin: 0 0 1.5rem;
+		padding-bottom: 0.75rem;
+		border-bottom: 1px solid #e5e7eb;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+	}
+	.post .meta {
+		font-size: 0.9rem;
+		color: #666;
+		line-height: 1.6;
+		flex: 1 1 auto;
+	}
+	.post .meta .author {
+		display: block;
+		color: #444;
+		font-weight: 500;
+	}
+	.post .meta .dates {
+		display: block;
+	}
+	.post .meta .updated {
+		color: #888;
+	}
+	.zoom-ctrl {
+		display: inline-flex;
+		align-items: center;
+		gap: 0;
+		flex-shrink: 0;
+		background: rgba(0,0,0,0.04);
+		border-radius: 999px;
+		border: 1px solid #e0e0e0;
+		padding: 0.15rem 0.2rem;
+		user-select: none;
+	}
+	.zoom-ctrl button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.6rem;
+		height: 1.6rem;
+		border: none;
+		border-radius: 50%;
+		background: transparent;
+		color: #555;
+		cursor: pointer;
+		transition: background 0.15s, color 0.15s;
+	}
+	.zoom-ctrl button:hover {
+		background: rgba(0,0,0,0.08);
+		color: #222;
+	}
+	.zoom-ctrl button:active {
+		background: rgba(0,0,0,0.14);
+	}
+	.zoom-ctrl span {
+		min-width: 2.8em;
+		text-align: center;
+		font-size: 0.72rem;
+		color: #666;
+		font-variant-numeric: tabular-nums;
+	}
+	.body p {
+		margin: 0 0 1em;
+		color: #333;
+		line-height: 1.75;
+		text-align: justify;
+		hyphens: auto;
+	}
+	.body p:last-child {
+		margin-bottom: 0;
+	}
+	.body em {
+		color: #555;
+	}
+	.body strong {
+		color: #1a1a1a;
+		font-weight: 600;
+	}
+	.body .katex-display + p {
+		margin-top: 0;
+	}
+	.body p + .katex-display {
+		margin-top: 0.5em;
+	}
+	.body blockquote .katex-display {
+		margin: 0.75em 0;
+	}
+	.body figure {
+		margin: 1.25rem 0;
+		text-align: center;
+	}
+	.body figure img {
+		display: block;
+		max-width: min(100%, 26rem);
+		width: auto;
+		height: auto;
+		margin-inline: auto;
+	}
+	.post .back {
+		margin-top: 2rem;
+		padding-top: 1rem;
+		border-top: 1px solid #e5e7eb;
+	}
+
+	/* ===== Documents page ===== */
+	.ask-row {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+	.ask-text {
+		flex: 1 1 auto;
+	}
+	.ask-avatar {
+		width: 5.5rem;
+		height: 5.5rem;
+		border-radius: 50%;
+		object-fit: cover;
+		object-position: center 15%;
+		flex-shrink: 0;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+	}
+	.section-title {
+		margin-top: 1.5rem !important;
+		font-weight: 600;
+		color: #1a1a1a;
+	}
+	.notes-topics {
+		margin: 0.5rem 0 0;
+		padding-left: 1.25rem;
+	}
+	.notes-topics .hint {
+		color: #666;
+		font-size: 0.9rem;
+	}
+
+	/* ===== Supersymmetry notes page ===== */
+	.lecture-list {
+		margin: 0;
+		padding-left: 1.25rem;
+	}
+	.lecture-list li {
+		margin: 0.4em 0;
+	}
+	.notes-meta {
+		margin: 0 0 0.75rem;
+		font-size: 0.95rem;
+		color: #666;
+	}
+	.intro {
+		margin: 0 0 1.25rem;
+		color: #555;
+		font-size: 0.95rem;
+		line-height: 1.6;
 	}
 </style>

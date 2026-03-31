@@ -2,43 +2,76 @@
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 
-const posts = (await getCollection('blog')).sort(
+const dateOpts: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+
+const allPosts = await getCollection('blog');
+
+function effectiveDate(post: (typeof allPosts)[number]) {
+	return post.data.updatedDate ?? post.data.pubDate;
+}
+
+const byEdited = [...allPosts].sort(
+	(a, b) => effectiveDate(b).valueOf() - effectiveDate(a).valueOf(),
+);
+const byPublished = [...allPosts].sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
 
-<Layout title="Posts | Alice's Blog">
+<Layout title="Posts | Tianyou Ma's Blog">
 	<h1>Posts</h1>
-	<ul>
-		{
-			posts.map((post) => (
-				<li>
-					<a href={`/posts/${post.id}`}>{post.data.title}</a>
-					<span>
-						{' — '}
-						{post.data.pubDate.toLocaleDateString('en-US', {
-							year: 'numeric',
-							month: 'long',
-							day: 'numeric',
-						})}
-					</span>
-				</li>
-			))
-		}
-	</ul>
-</Layout>
 
-<style>
-	ul {
-		margin: 0;
-		padding-left: 1.25rem;
-	}
-	li {
-		margin: 0.35em 0;
-		color: #444;
-	}
-	span {
-		color: #666;
-		font-size: 0.9rem;
-	}
-</style>
+	<div class="sort-bar">
+		<span class="sort-label">Sort by</span>
+		<button class="sort-btn active" id="sort-edited">Last edited</button>
+		<button class="sort-btn" id="sort-published">Published</button>
+	</div>
+
+	<ul id="list-edited" class="post-list">
+		{byEdited.map((post) => (
+			<li>
+				<a href={`/posts/${post.id}`}>{post.data.title}</a>
+				<span class="dates">
+					Published {post.data.pubDate.toLocaleDateString('en-US', dateOpts)}
+					{post.data.updatedDate && (
+						<span class="edited"> · Edited {post.data.updatedDate.toLocaleDateString('en-US', dateOpts)}</span>
+					)}
+				</span>
+			</li>
+		))}
+	</ul>
+
+	<ul id="list-published" class="post-list" style="display:none">
+		{byPublished.map((post) => (
+			<li>
+				<a href={`/posts/${post.id}`}>{post.data.title}</a>
+				<span class="dates">
+					Published {post.data.pubDate.toLocaleDateString('en-US', dateOpts)}
+					{post.data.updatedDate && (
+						<span class="edited"> · Edited {post.data.updatedDate.toLocaleDateString('en-US', dateOpts)}</span>
+					)}
+				</span>
+			</li>
+		))}
+	</ul>
+
+	<script>
+		document.addEventListener('astro:page-load', () => {
+			const btnEdited = document.getElementById('sort-edited');
+			const btnPublished = document.getElementById('sort-published');
+			const listEdited = document.getElementById('list-edited');
+			const listPublished = document.getElementById('list-published');
+			if (!btnEdited || !btnPublished || !listEdited || !listPublished) return;
+
+			function activate(active: HTMLElement, inactive: HTMLElement, show: HTMLElement, hide: HTMLElement) {
+				active.classList.add('active');
+				inactive.classList.remove('active');
+				show.style.display = '';
+				hide.style.display = 'none';
+			}
+
+			btnEdited.addEventListener('click', () => activate(btnEdited, btnPublished, listEdited, listPublished));
+			btnPublished.addEventListener('click', () => activate(btnPublished, btnEdited, listPublished, listEdited));
+		});
+	</script>
+</Layout>

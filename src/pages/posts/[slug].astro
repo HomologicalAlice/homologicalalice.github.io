@@ -18,41 +18,70 @@ interface Props {
 const { post } = Astro.props;
 const { Content } = await render(post);
 
-const pageTitle = `${post.data.title} | Alice's Blog`;
-const formattedDate = post.data.pubDate.toLocaleDateString('en-US', {
-	year: 'numeric',
-	month: 'long',
-	day: 'numeric',
-});
+const pageTitle = `${post.data.title} | Tianyou Ma's Blog`;
+const dateOpts: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+const formattedPub = post.data.pubDate.toLocaleDateString('en-US', dateOpts);
+const formattedUpd = post.data.updatedDate?.toLocaleDateString('en-US', dateOpts);
+const author = post.data.author ?? 'Tianyou Ma';
 ---
 
-<Layout title={pageTitle}>
-	<article class="post">
+<Layout title={pageTitle} contentLayout="reading">
+	<article class="post" id="post-article">
 		<h1>{post.data.title}</h1>
-		<time datetime={post.data.pubDate.toISOString()}>{formattedDate}</time>
+		<div class="toolbar">
+			<div class="meta">
+				<span class="author">{author}</span>
+				<span class="dates">
+					Published {formattedPub}
+					{formattedUpd && <span class="updated"> · Last edited {formattedUpd}</span>}
+				</span>
+			</div>
+			<div class="zoom-ctrl" aria-label="Zoom controls">
+				<button id="zoom-out" title="Zoom out">
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+				</button>
+				<span id="zoom-val">100%</span>
+				<button id="zoom-in" title="Zoom in">
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+				</button>
+			</div>
+		</div>
 		<div class="body">
 			<Content />
 		</div>
 		<p class="back"><a href="/posts/">← All posts</a></p>
 	</article>
-</Layout>
+	<script>
+		document.addEventListener('astro:page-load', () => {
+			const article = document.getElementById('post-article');
+			const main = article?.closest('main') as HTMLElement | null;
+			const label = document.getElementById('zoom-val');
+			const btnIn = document.getElementById('zoom-in');
+			const btnOut = document.getElementById('zoom-out');
+			if (!article || !main || !label || !btnIn || !btnOut) return;
 
-<style>
-	.post time {
-		display: block;
-		color: #666;
-		font-size: 0.9rem;
-		margin: 0 0 1rem;
-	}
-	.body :global(p) {
-		margin: 0 0 1em;
-		color: #444;
-		line-height: 1.5;
-	}
-	.body :global(p:last-child) {
-		margin-bottom: 0;
-	}
-	.back {
-		margin-top: 1.5rem;
-	}
-</style>
+			const STEP = 10;
+			const MIN = 70;
+			const MAX = 150;
+			const KEY = 'post-zoom';
+			const BASE_WIDTH = 52;
+			const FONT_RATIO = 0.6;
+
+			let pct = parseInt(localStorage.getItem(KEY) || '100', 10);
+			if (pct < MIN || pct > MAX) pct = 100;
+
+			function apply() {
+				const scale = pct / 100;
+				const fontScale = 1 + (scale - 1) * FONT_RATIO;
+				article!.style.fontSize = (fontScale * 100).toFixed(0) + '%';
+				main!.style.maxWidth = (BASE_WIDTH * scale).toFixed(1) + 'rem';
+				label!.textContent = pct + '%';
+				localStorage.setItem(KEY, String(pct));
+			}
+			apply();
+
+			btnIn.addEventListener('click', () => { pct = Math.min(MAX, pct + STEP); apply(); });
+			btnOut.addEventListener('click', () => { pct = Math.max(MIN, pct - STEP); apply(); });
+		});
+	</script>
+</Layout>

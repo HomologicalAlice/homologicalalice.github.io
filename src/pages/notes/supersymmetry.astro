@@ -1,0 +1,33 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const lectures = Array.from({ length: 10 }, (_, i) => {
+	const n = i + 1;
+	const num = n < 10 ? `0${n}` : `${n}`;
+	return {
+		label: `Lecture ${n}`,
+		href: `/docs/supersymmetry/lecture-${num}.pdf`,
+	};
+});
+---
+
+<Layout title="Supersymmetry notes | Tianyou Ma's Blog">
+	<h1>Supersymmetry, Localisation, and Instanton Counting on Gauge Theory</h1>
+	<p class="notes-meta">2026 s1, Lecturers: Yixuan Li and Bailing Wang</p>
+	<p class="intro">
+		These notes are still being updated. I expect to post the first four lectures by 5 April; after
+		that, I plan to add a new lecture each Friday during the teaching weeks.
+	</p>
+	<ul class="lecture-list">
+		{
+			lectures.map((lec) => (
+				<li>
+					<a href={lec.href}>{lec.label}</a>
+				</li>
+			))
+		}
+	</ul>
+	<p class="back">
+		<a href="/documents">← Back to Documents</a>
+	</p>
+</Layout>
