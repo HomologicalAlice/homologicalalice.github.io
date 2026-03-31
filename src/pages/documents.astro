@@ -2,33 +2,21 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Documents | Alice's Blog">
+<Layout title="Documents | Tianyou Ma's Blog">
 	<h1>Documents</h1>
-	<p>Are you looking for any of these?</p>
+	<div class="ask-row">
+		<p class="ask-text">Are you looking for any of these?</p>
+		<img class="ask-avatar" src="/images/ask-avatar.png" alt="" />
+	</div>
 	<ul>
 		<li><strong>CV:</strong> <a href="/docs/cv.pdf">Tianyou Ma's CV</a></li>
 	</ul>
-	<p class="section-title">Notes:</p>
-	<p class="notes-blurb">
-		There are no notes uploaded yet. I plan to upload my personal notes from this semester on
-		<em>Supersymmetry, Localisation, and Instanton Counting on Gauge Theory</em> when they are ready.
-	</p>
+	<p class="section-title">Notes</p>
+	<ul class="notes-topics">
+		<li>
+			<a href="/notes/supersymmetry/"
+				>Supersymmetry, Localisation, and Instanton Counting on Gauge Theory</a
+			><span class="hint"> — 2026 s1, Lecturers: Yixuan Li and Bailing Wang</span>
+		</li>
+	</ul>
 </Layout>
-
-<style>
-	ul {
-		margin: 0.75rem 0 0;
-		padding-left: 1.25rem;
-	}
-	li {
-		margin: 0.35em 0;
-	}
-	.section-title {
-		margin-top: 1.5rem !important;
-		font-weight: 600;
-		color: #1a1a1a;
-	}
-	.notes-blurb {
-		margin-top: 0.5rem;
-	}
-</style>
