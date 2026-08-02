@@ -1,35 +1,26 @@
 ---
-import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
-const latest = posts[0];
 ---
 
-<Layout title="Tianyou Ma's Blog">
-	<h1>Tianyou Ma's Blog</h1>
+<Layout title="Home | Tianyou Ma">
+	<h1>Tianyou Ma</h1>
 	<p>
-		I am an Honours student in Mathematics at the Australian National University, working under the
-		supervision of Brett Parker. My current work focuses on understanding the integral cohomology ring
-		structure of polygon spaces through the Kirwan map.
+		I am an Honours student whose interests centre on mirror symmetry, symplectic geometry and
+		symplectic topology, algebraic geometry—particularly geometric invariant theory (GIT) and
+		tropical geometry—and geometric representation theory. I work under the supervision of Brett
+		Parker and also receive extensive guidance from Yixuan Li.
 	</p>
 	<p>
-		More broadly, I am interested in symplectic geometry and symplectic topology, Morse
-		theory and Floer theory, geometric invariant theory, and aspects of mathematical physics, especially TQFT and
-		homological mirror symmetry.
+		I expect to graduate at the end of 2026, by which time I will have completed my undergraduate
+		thesis. Afterwards, I plan to devote myself to the study and research of exploded manifolds, with
+		a particular interest in the connection between Gromov–Witten invariants and tropical geometry.
 	</p>
-	<p>I expect to graduate at the end of 2026. After that, i have no idea where i will go. </p>
 	<p>
-		At present, I am on leave while dealing with mental health difficulties, but I hope to recover and
-		return to my work soon.
+		I plan to announce my first preprint on arXiv in September or October 2026. It will be my first
+		serious presentation of new mathematical results—please stay tuned.
 	</p>
-	{
-		latest && (
-			<p>
-				<a href={`/posts/${latest.id}`}>Latest post →</a>
-			</p>
-		)
-	}
+	<p>
+		Alongside mathematics, I am developing an AVG game that I expect to release on Steam in 2027. I
+		hope its writing will move you.
+	</p>
 </Layout>
