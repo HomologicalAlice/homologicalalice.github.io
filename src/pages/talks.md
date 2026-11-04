@@ -8,7 +8,7 @@ math: true
 ## Research talks
 
 - <span class="date">Dec 2026</span> *The Integral Cohomology of Smooth Abelian Symplectic Quotients*. 70th Annual Meeting of the Australian Mathematical Society, Perth (planned).
-- <span class="date">2026</span> *Chromatic Kirwan Theory*. Honours thesis talk, ANU.
+- <span class="date">13 Nov 2026</span> *Chromatic Kirwan Theory*. Honours thesis talk, ANU.
 
 ## Expository talks
 

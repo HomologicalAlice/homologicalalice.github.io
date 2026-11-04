@@ -1,0 +1,41 @@
+---
+import AliceLayout from '../../layouts/AliceLayout.astro';
+import { publishedThoughts, fmtDate, isoDate } from '../../lib/thoughts';
+
+const recent = (await publishedThoughts()).slice(0, 5);
+---
+
+<AliceLayout mirror="/">
+	<h1>Homological Alice</h1>
+	<div class="ask-row">
+		<p>Homological Alice is the name I use online. This is the B-side of the site, the less formal one.</p>
+		<img class="ask-avatar" src="/images/ask-avatar.webp" width="88" height="88" alt="Homological Alice avatar" />
+	</div>
+	<p>
+		Alongside mathematics, I am developing an AVG game that I expect to release on Steam in 2027. I
+		hope its writing will move you.
+	</p>
+	<p>
+		If you want to discuss anything with me, just come and talk to me in person or on WeChat (or
+		Instagram if you know me).
+	</p>
+
+	{
+		recent.length > 0 && (
+			<>
+				<h2>Recent thoughts</h2>
+				<ul class="thought-list">
+					{recent.map((t) => (
+						<li lang={t.data.lang}>
+							<a href={`/alice/thoughts/${t.id}/`}>{t.data.title}</a>
+							<time datetime={isoDate(t.data.date)} lang="en">{fmtDate(t.data.date)}</time>
+						</li>
+					))}
+				</ul>
+				<p class="back">
+					<a href="/alice/thoughts/">All thoughts →</a>
+				</p>
+			</>
+		)
+	}
+</AliceLayout>

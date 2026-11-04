@@ -24,7 +24,7 @@ const formattedUpd = post.data.updatedDate?.toLocaleDateString('en-AU', dateOpts
 const author = post.data.author ?? 'Tianyou Ma';
 ---
 
-<Layout title={post.data.title} description={post.data.description} math ogType="article">
+<Layout title={post.data.title} description={post.data.description} math ogType="article" mirror="/alice/thoughts/">
 	<article class="post" id="post-article">
 		<h1>{post.data.title}</h1>
 		<div class="toolbar">

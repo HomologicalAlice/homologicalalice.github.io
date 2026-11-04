@@ -1,8 +1,12 @@
 ---
 /**
- * Academic layout: Home, Research, Talks, Notes, CV.
- * The personal page uses AliceLayout.astro (wallpapers and music).
+ * The A-side: academic layout for Home, Research, Talks, Notes and CV.
+ * The B-side (Homological Alice, under /alice/) uses AliceLayout.astro.
+ * The A ⇄ B switch in the header goes to the matching page on the other side.
  */
+import MirrorSwitch from '../components/MirrorSwitch.astro';
+import MirrorTransition from '../components/MirrorTransition.astro';
+
 interface Props {
 	title?: string;
 	description?: string;
@@ -10,12 +14,20 @@ interface Props {
 	math?: boolean;
 	/** Open Graph type: 'article' for posts. */
 	ogType?: 'website' | 'article';
+	/** The matching page on the B-side, for the mirror switch. */
+	mirror?: string;
 }
 
 const DEFAULT_DESCRIPTION =
 	'Tianyou Ma, mathematics Honours student at the Australian National University, working on Kirwan maps in symplectic topology.';
 
-const { title, description = DEFAULT_DESCRIPTION, math = false, ogType = 'website' } = Astro.props;
+const {
+	title,
+	description = DEFAULT_DESCRIPTION,
+	math = false,
+	ogType = 'website',
+	mirror = '/alice/',
+} = Astro.props;
 const fullTitle = title ? `${title} | Tianyou Ma` : 'Tianyou Ma';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const year = new Date().getFullYear();
@@ -25,7 +37,6 @@ const nav = [
 	{ href: '/talks/', label: 'Talks' },
 	{ href: '/posts/', label: 'Notes' },
 	{ href: '/cv/', label: 'CV' },
-	{ href: '/personal/', label: 'Personal' },
 ];
 const here = Astro.url.pathname.replace(/\/?$/, '/');
 /** 'page' on the page itself, 'true' inside its section (a single post under Notes). */
@@ -60,17 +71,21 @@ const current = (href: string) =>
 		{/* Keep this version equal to node_modules/katex (the renderer used by rehype-katex). */}
 		{math && <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.44/dist/katex.min.css" />}
 		<meta name="generator" content={Astro.generator} />
+		<MirrorTransition />
 	</head>
 	<body>
 		<a class="skip-link" href="#content">Skip to content</a>
 		<header class="site-header">
 			<div class="wrap header-inner">
 				<a class="site-name" href="/">Tianyou Ma</a>
-				<nav aria-label="Main">
-					{nav.map(({ href, label }) => (
-						<a href={href} aria-current={current(href)}>{label}</a>
-					))}
-				</nav>
+				<div class="header-right">
+					<nav aria-label="Main">
+						{nav.map(({ href, label }) => (
+							<a href={href} aria-current={current(href)}>{label}</a>
+						))}
+					</nav>
+					<MirrorSwitch side="A" href={mirror} />
+				</div>
 			</div>
 		</header>
 		<main id="content" class="wrap">
@@ -171,6 +186,16 @@ const current = (href: string) =>
 		font-weight: 600;
 		color: var(--ink);
 		text-decoration: none;
+	}
+	.header-right {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.4rem 1.1rem;
+		--m-fg: var(--muted);
+		--m-border: var(--hair);
+		--m-on-bg: var(--accent);
+		--m-on-fg: var(--bg);
 	}
 	.site-header nav {
 		display: flex;

@@ -1,0 +1,33 @@
+---
+import { render } from 'astro:content';
+import AliceLayout from '../../../layouts/AliceLayout.astro';
+import { publishedThoughts, fmtDate, isoDate, type Thought } from '../../../lib/thoughts';
+
+export async function getStaticPaths() {
+	const thoughts = await publishedThoughts();
+	return thoughts.map((t) => ({ params: { slug: t.id }, props: { t } }));
+}
+
+const { t } = Astro.props as { t: Thought };
+const { Content } = await render(t);
+// Load the KaTeX stylesheet only when the post actually contains math.
+const hasMath = t.rendered?.html?.includes('class="katex') ?? true;
+---
+
+<AliceLayout
+	title={t.data.title}
+	description={t.data.description}
+	lang={t.data.lang}
+	math={hasMath}
+	ogType="article"
+	mirror="/posts/"
+>
+	<article>
+		<h1>{t.data.title}</h1>
+		<time class="thought-meta" datetime={isoDate(t.data.date)} lang="en">{fmtDate(t.data.date)}</time>
+		<div class="thought-body">
+			<Content />
+		</div>
+		<p class="back" lang="en"><a href="/alice/thoughts/">← All thoughts</a></p>
+	</article>
+</AliceLayout>

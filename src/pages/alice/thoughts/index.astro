@@ -1,0 +1,25 @@
+---
+import AliceLayout from '../../../layouts/AliceLayout.astro';
+import { publishedThoughts, fmtDate, isoDate } from '../../../lib/thoughts';
+
+const thoughts = await publishedThoughts();
+---
+
+<AliceLayout title="Thoughts" description="Thoughts by Homological Alice." mirror="/posts/">
+	<h1>Thoughts</h1>
+	{
+		thoughts.length === 0 ? (
+			<p class="empty">Nothing here yet.</p>
+		) : (
+			<ul class="thought-list">
+				{thoughts.map((t) => (
+					<li lang={t.data.lang}>
+						<a href={`/alice/thoughts/${t.id}/`}>{t.data.title}</a>
+						{t.data.description && <p class="desc">{t.data.description}</p>}
+						<time datetime={isoDate(t.data.date)} lang="en">{fmtDate(t.data.date)}</time>
+					</li>
+				))}
+			</ul>
+		)
+	}
+</AliceLayout>

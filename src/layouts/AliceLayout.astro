@@ -1,49 +1,80 @@
 ---
 /**
- * The "Homological Alice" look: rotating wallpapers, a frosted card, and music.
- * Used only by the personal page.
+ * The B-side: Homological Alice, under /alice/.
+ * Rotating wallpapers, a frosted card, and music. The A ⇄ B switch goes back to the academic side.
  */
+import MirrorSwitch from '../components/MirrorSwitch.astro';
+import MirrorTransition from '../components/MirrorTransition.astro';
+
 interface Props {
 	title?: string;
+	description?: string;
+	/** The matching page on the A-side, for the mirror switch. */
+	mirror?: string;
+	/** Language of the page content, e.g. 'zh-CN' for a post written in Chinese. */
+	lang?: string;
+	/** Load the KaTeX stylesheet (posts with math). */
+	math?: boolean;
+	ogType?: 'website' | 'article';
 }
-const { title = 'Homological Alice' } = Astro.props;
+const {
+	title,
+	description = 'Homological Alice: the B-side of this site. Thoughts, and things outside mathematics.',
+	mirror = '/',
+	lang = 'en',
+	math = false,
+	ogType = 'website',
+} = Astro.props;
+const fullTitle = title ? `${title} | Homological Alice` : 'Homological Alice';
+const canonical = new URL(Astro.url.pathname, Astro.site);
+
+const nav = [
+	{ href: '/alice/', label: 'Alice' },
+	{ href: '/alice/thoughts/', label: 'Thoughts' },
+];
+const here = Astro.url.pathname.replace(/\/?$/, '/');
+const current = (href: string) =>
+	here === href ? 'page' : href !== '/alice/' && here.startsWith(href) ? 'true' : undefined;
 ---
 
 <!doctype html>
-<html lang="en" style="background:#1a1a2e">
+<html lang={lang} style="background:#1a1a2e">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>{title}</title>
-		<meta name="description" content="Homological Alice: the personal side of Tianyou Ma." />
-		<link rel="canonical" href={new URL('/personal/', Astro.site)} />
-		<meta property="og:type" content="website" />
-		<meta property="og:site_name" content="Tianyou Ma" />
-		<meta property="og:title" content={title} />
-		<meta property="og:url" content={new URL('/personal/', Astro.site)} />
+		<title>{fullTitle}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+		<meta property="og:type" content={ogType} />
+		<meta property="og:site_name" content="Homological Alice" />
+		<meta property="og:title" content={fullTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<meta name="theme-color" content="#1a1a2e" />
 		<link rel="preload" href="/images/alice1.avif" as="image" type="image/avif" />
 		<link rel="icon" href="/favicon.ico" sizes="32x32" />
 		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		{/* Keep this version equal to node_modules/katex (the renderer used by rehype-katex). */}
+		{math && <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.44/dist/katex.min.css" />}
 		<meta name="generator" content={Astro.generator} />
+		<MirrorTransition />
 	</head>
 	<body>
 		<div id="wallpaper-a" class="wallpaper"></div>
 		<div id="wallpaper-b" class="wallpaper"></div>
 		<header>
-			<nav aria-label="Main">
-				<a href="/">Home</a>
-				<a href="/research/">Research</a>
-				<a href="/talks/">Talks</a>
-				<a href="/posts/">Notes</a>
-				<a href="/cv/">CV</a>
-				<a href="/personal/" aria-current="page">Personal</a>
+			<nav aria-label="Main" lang="en">
+				{nav.map(({ href, label }) => (
+					<a href={href} aria-current={current(href)}>{label}</a>
+				))}
 			</nav>
+			<MirrorSwitch side="B" href={mirror} />
 		</header>
 		<main>
 			<slot />
 		</main>
 		<audio id="bgm" src="/audio/bgm.mp3" loop preload="none"></audio>
-		<button id="bgm-btn" type="button" aria-pressed="false">
+		<button id="bgm-btn" type="button" aria-pressed="false" lang="en">
 			<span aria-hidden="true">&#9835;</span> <span class="lbl">Play music</span>
 		</button>
 		<script>
@@ -91,7 +122,7 @@ const { title = 'Homological Alice' } = Astro.props;
 				const autoRotate = !matchMedia('(prefers-reduced-motion: reduce)').matches;
 				let timer = autoRotate ? setInterval(nextWallpaper, 30_000) : undefined;
 				document.addEventListener('click', (e) => {
-					if ((e.target as HTMLElement).closest('a, button, main')) return;
+					if ((e.target as HTMLElement).closest('a, button, main, header')) return;
 					clearInterval(timer);
 					nextWallpaper();
 					if (autoRotate) timer = setInterval(nextWallpaper, 30_000);
@@ -153,7 +184,17 @@ const { title = 'Homological Alice' } = Astro.props;
 	header {
 		position: relative;
 		z-index: 3;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem 1.5rem;
 		padding: 1.25rem 1rem;
+		--m-fg: rgba(255, 255, 255, 0.9);
+		--m-bg: rgba(0, 0, 0, 0.3);
+		--m-border: rgba(255, 255, 255, 0.5);
+		--m-on-bg: #fff;
+		--m-on-fg: #1a1a2e;
 	}
 	nav {
 		display: flex;
@@ -166,10 +207,15 @@ const { title = 'Homological Alice' } = Astro.props;
 		text-decoration: none;
 		font-size: 0.95rem;
 		letter-spacing: 0.02em;
+		padding: 0.15rem 0;
+		text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 	}
 	nav a:hover,
-	nav a[aria-current='page'] {
+	nav a[aria-current] {
 		color: #fff;
+	}
+	nav a[aria-current] {
+		box-shadow: inset 0 -2px 0 rgba(255, 255, 255, 0.85);
 	}
 	main {
 		position: relative;
@@ -192,6 +238,12 @@ const { title = 'Homological Alice' } = Astro.props;
 	main h1 {
 		margin: 0 0 0.75rem;
 		font-size: 1.75rem;
+		font-weight: 600;
+		color: #1a1a1a;
+	}
+	main h2 {
+		margin: 2rem 0 0.75rem;
+		font-size: 1.15rem;
 		font-weight: 600;
 		color: #1a1a1a;
 	}
@@ -228,6 +280,129 @@ const { title = 'Homological Alice' } = Astro.props;
 		flex-shrink: 0;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 	}
+
+	/* ---------- Thoughts: list ---------- */
+	.thought-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.thought-list li {
+		padding: 0.75rem 0;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+	}
+	.thought-list li:last-child {
+		border-bottom: none;
+	}
+	.thought-list a {
+		font-size: 1.05rem;
+		font-weight: 600;
+		color: #1a1a1a;
+	}
+	.thought-list a:hover {
+		color: #2563eb;
+		text-decoration: none;
+	}
+	.thought-list .desc {
+		margin: 0.15rem 0 0;
+		font-size: 0.95rem;
+	}
+	.thought-list time,
+	.thought-meta {
+		display: block;
+		font-size: 0.82rem;
+		color: #6b7280;
+		font-variant-numeric: tabular-nums;
+	}
+	.empty {
+		color: #6b7280;
+		font-style: italic;
+	}
+
+	/* ---------- Thoughts: a single post ---------- */
+	.thought-meta {
+		margin: -0.4rem 0 1.5rem;
+	}
+	.thought-body {
+		color: #333;
+		line-height: 1.8;
+		overflow-wrap: break-word;
+	}
+	.thought-body p {
+		margin: 0 0 1em;
+		color: inherit;
+		line-height: inherit;
+	}
+	.thought-body p + p {
+		margin-top: 0;
+	}
+	.thought-body h2,
+	.thought-body h3 {
+		margin: 1.75rem 0 0.6rem;
+		color: #1a1a1a;
+	}
+	.thought-body h3 {
+		font-size: 1.02rem;
+	}
+	.thought-body ul,
+	.thought-body ol {
+		margin: 0 0 1em;
+		padding-left: 1.5em;
+	}
+	.thought-body li {
+		margin: 0.3em 0;
+	}
+	.thought-body blockquote {
+		margin: 1.25em 0;
+		padding: 0.5em 1em;
+		border-left: 3px solid rgba(37, 99, 235, 0.5);
+		background: rgba(255, 255, 255, 0.5);
+		border-radius: 0 0.4rem 0.4rem 0;
+		color: #555;
+	}
+	.thought-body blockquote p:last-child {
+		margin-bottom: 0;
+	}
+	.thought-body img,
+	.thought-body video {
+		display: block;
+		max-width: 100%;
+		height: auto;
+		margin: 1.25rem auto;
+		border-radius: 0.5rem;
+	}
+	.thought-body code {
+		font-family: ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
+		font-size: 0.88em;
+		background: rgba(0, 0, 0, 0.06);
+		padding: 0.1em 0.35em;
+		border-radius: 0.25rem;
+	}
+	.thought-body pre {
+		overflow-x: auto;
+		padding: 0.9em 1em;
+		background: rgba(0, 0, 0, 0.06);
+		border-radius: 0.5rem;
+	}
+	.thought-body pre code {
+		background: none;
+		padding: 0;
+	}
+	.thought-body hr {
+		margin: 2rem 0;
+		border: none;
+		border-top: 1px solid rgba(0, 0, 0, 0.12);
+	}
+	.thought-body .katex-display {
+		overflow-x: auto;
+		overflow-y: hidden;
+		padding: 0.2em 0;
+	}
+	.back {
+		margin-top: 2rem;
+		font-size: 0.95rem;
+	}
+
 	#bgm-btn {
 		position: fixed;
 		bottom: 1.25rem;
