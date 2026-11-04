@@ -17,7 +17,7 @@ For compact Hamiltonian torus actions that are free on the zero level, we show t
 <p class="work-title">Chromatic Kirwan Theory</p>
 <p class="work-meta">BSc (Honours) thesis, Australian National University, 2026 · Supervisor: Brett Parker · Submitted Oct 2026, results expected Dec 2026</p>
 
-<p class="note">I will post the full thesis here once the paper based on its last chapter is on arXiv. Until then I am happy to send it to anyone who asks: <a href="mailto:u7902950@anu.edu.au">u7902950@anu.edu.au</a>.</p>
+<p class="note">I will post the full thesis here once the paper based on its last chapter is on arXiv. Until then I am happy to send it to anyone who asks: <a href="mailto:u7902950@anu.edu.au">u7902950@anu.edu.au</a>. Chapter 1 is already online: <a href="/posts/equivariant-cohomology/">Equivariant Cohomology</a>.</p>
 
 ### Abstract
 
@@ -30,7 +30,7 @@ Most of the thesis is a detailed account of Kirwan theory over $\mathbb{Q}$. It 
 ### Contents
 
 0. Introduction
-1. **Equivariant Cohomology.** The Borel construction; genuine and Borel equivariance; Borel–Moore homology and Euler classes; complex projective space; the Cartan model and localisation; fixed points and GKM theory.
+1. **[Equivariant Cohomology](/posts/equivariant-cohomology/).** The Borel construction; genuine and Borel equivariance; Borel–Moore homology and Euler classes; complex projective space; the Cartan model and localisation; fixed points and GKM theory.
 2. **Kirwan Theory.** Moment maps, convexity and reduction; Kirwan surjectivity: the idea; Morse theory of the norm-square; the Atiyah–Bott lemma; rings as spaces; the algebraic geometry behind Kirwan theory; Tolman–Weitsman’s kernel expression; polygon spaces; the integral question.
 3. **Chromatic Kirwan Theory.** Morava $K$-theory and its Euler classes; the Atiyah–Bott lemma in Morava $K$-theory; integral Kirwan surjectivity; integral Kirwan kernel; there should be a chromatic Kirwan theory.
 
