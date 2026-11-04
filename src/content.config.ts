@@ -11,6 +11,11 @@ const blog = defineCollection({
 		updatedDate: z.coerce.date().optional(),
 		author: z.string().optional(),
 		description: z.string().optional(),
+		/**
+		 * A PDF note: the PDF (usually under /files/notes/) is shown page by page with a reader.
+		 * The Markdown body, if any, appears above it as an introduction.
+		 */
+		pdf: z.string().optional(),
 	}),
 });
 

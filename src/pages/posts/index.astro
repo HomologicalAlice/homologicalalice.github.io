@@ -27,6 +27,7 @@ const posts = (await getCollection('blog')).sort(
 					<span class="dates">
 						{fmt(post.data.pubDate)}
 						{post.data.updatedDate && <> · edited {fmt(post.data.updatedDate)}</>}
+						{post.data.pdf && <> · PDF</>}
 					</span>
 				</li>
 			))}

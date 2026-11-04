@@ -398,6 +398,48 @@ const current = (href: string) =>
 		overflow-y: hidden;
 		padding: 0.2em 0;
 	}
+	/* A marked insertion, e.g. a part restored from an earlier draft. */
+	.thought-body .from-draft {
+		margin: 2rem 0 1rem;
+		padding-top: 1rem;
+		border-top: 1px dashed rgba(0, 0, 0, 0.2);
+		font-size: 0.85rem;
+		font-style: italic;
+		color: #6b7280;
+	}
+	.thought-body .attribution {
+		text-align: right;
+		color: #555;
+	}
+	/* Footnotes (Markdown [^1]). */
+	.thought-body sup a {
+		text-decoration: none;
+		padding: 0 0.1em;
+	}
+	.thought-body .footnotes {
+		margin-top: 2.5rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid rgba(0, 0, 0, 0.12);
+		font-size: 0.88rem;
+		color: #555;
+	}
+	.thought-body .footnotes ol {
+		padding-left: 1.25em;
+	}
+	.thought-body .footnotes p {
+		margin: 0;
+	}
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
 	.back {
 		margin-top: 2rem;
 		font-size: 0.95rem;

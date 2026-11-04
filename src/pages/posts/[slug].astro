@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import PdfPages from '../../components/PdfPages.astro';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog');
@@ -23,6 +24,8 @@ const dateOpts: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', 
 const formattedPub = post.data.pubDate.toLocaleDateString('en-AU', dateOpts);
 const formattedUpd = post.data.updatedDate?.toLocaleDateString('en-AU', dateOpts);
 const author = post.data.author ?? 'Tianyou Ma';
+const pdf = post.data.pdf;
+const hasBody = (post.body ?? '').trim().length > 0;
 ---
 
 <Layout title={post.data.title} description={post.data.description} math ogType="article" mirror="/alice/thoughts/">
@@ -36,19 +39,28 @@ const author = post.data.author ?? 'Tianyou Ma';
 					{formattedUpd && <span> · edited {formattedUpd}</span>}
 				</span>
 			</div>
-			<div class="zoom-ctrl" role="group" aria-label="Text size">
-				<button type="button" id="zoom-out" aria-label="Smaller text">
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-				</button>
-				<span id="zoom-val" aria-live="polite">100%</span>
-				<button type="button" id="zoom-in" aria-label="Larger text">
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-				</button>
-			</div>
+			{
+				!pdf && (
+					<div class="zoom-ctrl" role="group" aria-label="Text size">
+						<button type="button" id="zoom-out" aria-label="Smaller text">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+						</button>
+						<span id="zoom-val" aria-live="polite">100%</span>
+						<button type="button" id="zoom-in" aria-label="Larger text">
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+						</button>
+					</div>
+				)
+			}
 		</div>
-		<div class="body">
-			<Content />
-		</div>
+		{
+			hasBody && (
+				<div class="body">
+					<Content />
+				</div>
+			)
+		}
+		{pdf && <PdfPages src={pdf} title={post.data.title} />}
 		<p class="back"><a href="/posts/">← All notes</a></p>
 	</article>
 	<script>
