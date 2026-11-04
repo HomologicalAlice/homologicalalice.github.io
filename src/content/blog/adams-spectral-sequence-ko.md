@@ -1,7 +1,7 @@
 ---
 title: "The Adams Spectral Sequence for ko"
-pubDate: 2026-03-29
-updatedDate: 2026-03-31
+# Written in May 2025 (put on this site in March 2026). Notes show only the month.
+pubDate: 2025-05-01
 description: "A learning-oriented overview of the Adams spectral sequence and the computation of the E₂-page for ko."
 ---
 

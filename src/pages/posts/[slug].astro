@@ -18,7 +18,8 @@ interface Props {
 const { post } = Astro.props;
 const { Content } = await render(post);
 
-const dateOpts: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+// Notes show month and year only. UTC, so a date in the front matter never shifts a day.
+const dateOpts: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', timeZone: 'UTC' };
 const formattedPub = post.data.pubDate.toLocaleDateString('en-AU', dateOpts);
 const formattedUpd = post.data.updatedDate?.toLocaleDateString('en-AU', dateOpts);
 const author = post.data.author ?? 'Tianyou Ma';

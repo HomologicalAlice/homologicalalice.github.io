@@ -12,6 +12,7 @@ export async function publishedThoughts(): Promise<Thought[]> {
 	return all.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 }
 
-const dateOpts: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+// UTC, so a date in the front matter never shifts by a day.
+const dateOpts: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' };
 export const fmtDate = (d: Date) => d.toLocaleDateString('en-AU', dateOpts);
 export const isoDate = (d: Date) => d.toISOString().slice(0, 10);
