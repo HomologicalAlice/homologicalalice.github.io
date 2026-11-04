@@ -1,574 +1,562 @@
 ---
-import { ClientRouter } from 'astro:transitions';
-
+/**
+ * Academic layout: Home, Research, Talks, Notes, CV.
+ * The personal page uses AliceLayout.astro (wallpapers and music).
+ */
 interface Props {
 	title?: string;
-	/** Narrower card for long-form / math posts; default keeps the wider blog layout. */
-	contentLayout?: 'default' | 'reading';
+	description?: string;
+	/** Load the KaTeX stylesheet (pages with math). */
+	math?: boolean;
+	/** Open Graph type: 'article' for posts. */
+	ogType?: 'website' | 'article';
 }
-const { title = 'Homological Alice', contentLayout = 'default' } = Astro.props;
+
+const DEFAULT_DESCRIPTION =
+	'Tianyou Ma, mathematics Honours student at the Australian National University, working on Kirwan maps in symplectic topology.';
+
+const { title, description = DEFAULT_DESCRIPTION, math = false, ogType = 'website' } = Astro.props;
+const fullTitle = title ? `${title} | Tianyou Ma` : 'Tianyou Ma';
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const year = new Date().getFullYear();
+
+const nav = [
+	{ href: '/research/', label: 'Research' },
+	{ href: '/talks/', label: 'Talks' },
+	{ href: '/posts/', label: 'Notes' },
+	{ href: '/cv/', label: 'CV' },
+	{ href: '/personal/', label: 'Personal' },
+];
+const here = Astro.url.pathname.replace(/\/?$/, '/');
+/** 'page' on the page itself, 'true' inside its section (a single post under Notes). */
+const current = (href: string) =>
+	here === href ? 'page' : href === '/posts/' && here.startsWith('/posts/') ? 'true' : undefined;
 ---
 
 <!doctype html>
-<html lang="en" style="background:#1a1a2e">
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="preload" href="/images/alice1.avif" as="image" type="image/avif" />
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{fullTitle}</title>
+		<meta name="description" content={description} />
+		<meta name="author" content="Tianyou Ma" />
+		<link rel="canonical" href={canonical} />
+		<meta property="og:type" content={ogType} />
+		<meta property="og:site_name" content="Tianyou Ma" />
+		<meta property="og:title" content={fullTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<meta name="theme-color" content="#fbfbf9" media="(prefers-color-scheme: light)" />
+		<meta name="theme-color" content="#14161a" media="(prefers-color-scheme: dark)" />
+		<link rel="icon" href="/favicon.ico" sizes="32x32" />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap"
+		/>
+		{/* Keep this version equal to node_modules/katex (the renderer used by rehype-katex). */}
+		{math && <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.44/dist/katex.min.css" />}
 		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-		<ClientRouter />
 	</head>
 	<body>
-		<div id="wallpaper-a" class="wallpaper" transition:persist></div>
-		<div id="wallpaper-b" class="wallpaper" transition:persist></div>
-		<header>
-			<nav>
-				<a href="/">Home</a>
-				<a href="/posts/">Posts</a>
-				<a href="/documents">Documents</a>
-				<a href="/about">About</a>
-			</nav>
+		<a class="skip-link" href="#content">Skip to content</a>
+		<header class="site-header">
+			<div class="wrap header-inner">
+				<a class="site-name" href="/">Tianyou Ma</a>
+				<nav aria-label="Main">
+					{nav.map(({ href, label }) => (
+						<a href={href} aria-current={current(href)}>{label}</a>
+					))}
+				</nav>
+			</div>
 		</header>
-		<main class:list={[{ 'main--reading': contentLayout === 'reading' }]}>
+		<main id="content" class="wrap">
 			<slot />
 		</main>
-		<audio id="bgm" src="/audio/bgm.mp3" loop preload="none" transition:persist></audio>
-		<button id="bgm-btn" aria-label="Toggle music" transition:persist>&#9835; Play</button>
-		<script>
-			document.addEventListener('astro:page-load', () => {
-				if (!(window as any).__wallpaperRotatorStarted) {
-					(window as any).__wallpaperRotatorStarted = true;
-
-					const a = document.getElementById('wallpaper-a') as HTMLDivElement | null;
-					const b = document.getElementById('wallpaper-b') as HTMLDivElement | null;
-					if (a && b) {
-						const wallpapers = [
-							'/images/alice1.avif',
-							'/images/alice2.avif',
-							'/images/alice3.avif',
-							'/images/alice4.avif',
-							'/images/desktop-wallpaper.avif',
-						];
-
-						let i = 0;
-						let showingA = true;
-
-						function setLayer(el: HTMLDivElement, url: string) {
-							el.style.backgroundImage = `url('${url}')`;
-							const img = new Image();
-							img.src = url;
-						}
-
-						function nextWallpaper() {
-							document.body.style.backgroundImage = `url('${wallpapers[i]}')`;
-							i = (i + 1) % wallpapers.length;
-							const front = showingA ? a : b;
-							const back = showingA ? b : a;
-							back.style.transition = 'none';
-							back.style.opacity = '0';
-							setLayer(back, wallpapers[i]);
-							void back.offsetWidth;
-							back.style.transition = 'opacity 1.5s ease-in-out';
-							back.style.opacity = '1';
-							setTimeout(() => { front.style.opacity = '0'; }, 100);
-							showingA = !showingA;
-						}
-
-						setLayer(a, wallpapers[i]);
-						a.style.opacity = '1';
-						b.style.opacity = '0';
-
-						let timer = setInterval(nextWallpaper, 30_000);
-
-						document.addEventListener('click', (e) => {
-							if ((e.target as HTMLElement).closest('a, button, main')) return;
-							clearInterval(timer);
-							nextWallpaper();
-							timer = setInterval(nextWallpaper, 30_000);
-						});
-					}
-				}
-
-				const audio = document.getElementById('bgm') as HTMLAudioElement;
-				const btn = document.getElementById('bgm-btn')!;
-				if (!audio || !btn) return;
-
-				function updateBtn() {
-					btn.textContent = audio.paused ? '\u266B Play' : '\u266B Pause';
-				}
-
-				if (localStorage.getItem('bgm') === 'playing' && audio.paused) {
-					audio.play().then(updateBtn).catch(() => {});
-				}
-				updateBtn();
-
-				btn.onclick = () => {
-					if (audio.paused) {
-						audio.play().then(() => {
-							localStorage.setItem('bgm', 'playing');
-							updateBtn();
-						});
-					} else {
-						audio.pause();
-						localStorage.setItem('bgm', 'paused');
-						updateBtn();
-					}
-				};
-			});
-		</script>
+		<footer class="site-footer">
+			<div class="wrap">
+				<span>© {year} Tianyou Ma</span>
+				<span aria-hidden="true">·</span>
+				<a href="mailto:u7902950@anu.edu.au">u7902950@anu.edu.au</a>
+			</div>
+		</footer>
 	</body>
 </html>
 
 <style is:global>
+	:root {
+		--bg: #fbfbf9;
+		--ink: #1a1a1a;
+		--ink-2: #3b4048;
+		--muted: #6b7280;
+		--hair: #e2e5ea;
+		--accent: #1f3a5f;
+		--link: #1f4f8f;
+		--tint: rgba(31, 58, 95, 0.05);
+		--code-bg: rgba(0, 0, 0, 0.05);
+		--serif: 'Source Serif 4', 'Source Serif Pro', Georgia, 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+		--sans: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+		--mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+		--measure: 44rem;
+		color-scheme: light;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root {
+			--bg: #14161a;
+			--ink: #e6e6e3;
+			--ink-2: #c8ccd2;
+			--muted: #9aa1ab;
+			--hair: #2c3139;
+			--accent: #a9c1e4;
+			--link: #9cc0f0;
+			--tint: rgba(169, 193, 228, 0.07);
+			--code-bg: rgba(255, 255, 255, 0.08);
+			color-scheme: dark;
+		}
+	}
+
 	html {
-		min-height: 100%;
+		-webkit-text-size-adjust: 100%;
 	}
 	body {
 		margin: 0;
-		min-height: 100vh;
-		font-family: system-ui, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
-		background: url('/images/alice1.avif') center/cover no-repeat fixed;
-		background-color: #1a1a2e;
+		background: var(--bg);
+		color: var(--ink);
+		font-family: var(--serif);
+		font-size: 1.0625rem;
+		line-height: 1.65;
+		text-rendering: optimizeLegibility;
 	}
-	.wallpaper {
-		position: fixed;
-		inset: 0;
-		z-index: 1;
-		background-size: cover;
-		background-position: center;
-		background-repeat: no-repeat;
-		opacity: 0;
-		transition: opacity 1.5s ease-in-out;
-		will-change: opacity;
+	.wrap {
+		max-width: var(--measure);
+		margin: 0 auto;
+		padding: 0 1.25rem;
 	}
-	body::before {
-		content: '';
-		position: fixed;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.3);
-		z-index: 2;
-		pointer-events: none;
+
+	.skip-link {
+		position: absolute;
+		left: -999px;
+		top: 0.5rem;
+		padding: 0.4rem 0.8rem;
+		background: var(--accent);
+		color: var(--bg);
+		font-family: var(--sans);
+		font-size: 0.9rem;
+		z-index: 10;
 	}
-	header {
-		position: relative;
-		z-index: 3;
-		padding: 1.25rem 2rem;
+	.skip-link:focus {
+		left: 0.5rem;
 	}
-	nav {
+
+	/* ---------- Header ---------- */
+	.site-header {
+		border-bottom: 1px solid var(--hair);
+		font-family: var(--sans);
+	}
+	.header-inner {
 		display: flex;
-		gap: 1.5rem;
 		flex-wrap: wrap;
-		justify-content: center;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.4rem 1.5rem;
+		padding-top: 1.1rem;
+		padding-bottom: 0.9rem;
 	}
-	nav a {
-		color: rgba(255, 255, 255, 0.85);
+	.site-name {
+		font-family: var(--serif);
+		font-size: 1.2rem;
+		font-weight: 600;
+		color: var(--ink);
 		text-decoration: none;
+	}
+	.site-header nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.2rem 1.1rem;
 		font-size: 0.95rem;
-		letter-spacing: 0.02em;
 	}
-	nav a:hover {
-		color: #fff;
+	.site-header nav a {
+		color: var(--muted);
+		text-decoration: none;
+		padding: 0.15rem 0;
 	}
-	main {
-		position: relative;
-		z-index: 3;
-		max-width: 38rem;
-		margin: 2rem auto 3rem;
-		padding: 2.5rem 2.5rem 3rem;
-		background: rgba(255, 255, 255, 0.80);
-		border-radius: 1rem;
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-		backdrop-filter: blur(6px);
+	.site-header nav a:hover {
+		color: var(--ink);
 	}
-	main.main--reading {
-		max-width: 52rem;
-		padding: 2.5rem 3rem 3rem;
+	.site-header nav a[aria-current] {
+		color: var(--ink);
+		box-shadow: inset 0 -2px 0 var(--accent);
 	}
-	@media (max-width: 56rem) {
-		main.main--reading {
-			max-width: 100%;
-			padding: 2rem 1.25rem 2.5rem;
-		}
+
+	/* ---------- Main ---------- */
+	main.wrap {
+		padding-top: 2.5rem;
+		padding-bottom: 4rem;
 	}
 	main h1 {
-		margin: 0 0 0.5rem;
-		font-size: 1.75rem;
+		margin: 0 0 0.35rem;
+		font-size: 2rem;
+		line-height: 1.2;
 		font-weight: 600;
-		color: #1a1a1a;
+		letter-spacing: -0.01em;
 	}
 	main p {
-		margin: 0;
-		color: #444;
-		line-height: 1.7;
-	}
-	main p + p {
-		margin-top: 1em;
+		margin: 0 0 1rem;
 	}
 	main a {
-		color: #2563eb;
-		text-decoration: none;
+		color: var(--link);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 2px;
+		text-decoration-color: color-mix(in srgb, var(--link) 35%, transparent);
 	}
 	main a:hover {
-		text-decoration: underline;
+		text-decoration-color: currentColor;
 	}
-	/* --- Display math --- */
+	main strong {
+		font-weight: 600;
+	}
+	.lede {
+		font-family: var(--sans);
+		font-size: 0.98rem;
+		color: var(--muted);
+		margin: 0 0 1.25rem;
+	}
+	.quick-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.3rem 0.6rem;
+		font-family: var(--sans);
+		font-size: 0.95rem;
+		margin: 0 0 2rem;
+	}
+	.quick-links .sep {
+		color: var(--muted);
+	}
+	.aside {
+		color: var(--muted);
+		font-size: 0.95rem;
+	}
+
+	/* Section headings on the academic pages echo the CV: small caps, hairline. */
+	.page h2 {
+		margin: 2.5rem 0 1rem;
+		padding-bottom: 0.35rem;
+		border-bottom: 1px solid var(--hair);
+		font-family: var(--sans);
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+		color: var(--accent);
+	}
+	.page h3 {
+		margin: 1.75rem 0 0.5rem;
+		font-size: 1.05rem;
+		font-weight: 600;
+	}
+	.page ul {
+		margin: 0 0 1rem;
+		padding-left: 1.2rem;
+	}
+	.page li {
+		margin: 0.45rem 0;
+	}
+	.page ol {
+		margin: 0 0 1rem;
+		padding-left: 1.6rem;
+	}
+
+	/* Dated entries: <ul class="entries"> with <span class="date"> first. */
+	.page ul.entries {
+		list-style: none;
+		padding: 0;
+	}
+	/* Fallback (also the phone layout): the date sits on its own line above the entry. */
+	.page .date {
+		display: block;
+		font-family: var(--sans);
+		font-size: 0.85rem;
+		line-height: 1.5;
+		color: var(--muted);
+		font-variant-numeric: tabular-nums;
+	}
+	@supports selector(:has(> *)) {
+		.page ul:has(> li > .date) {
+			list-style: none;
+			padding: 0;
+		}
+		@media (min-width: 34.01rem) {
+			.page li:has(> .date) {
+				position: relative;
+				padding-left: 10rem;
+			}
+			.page li:has(> .date) > .date {
+				position: absolute;
+				left: 0;
+				top: 0.2em;
+				width: 9.5rem;
+			}
+		}
+	}
+	.work-title {
+		font-size: 1.12rem;
+		font-weight: 600;
+		margin: 0 0 0.2rem;
+	}
+	.work-meta {
+		font-family: var(--sans);
+		font-size: 0.9rem;
+		color: var(--muted);
+		margin: 0 0 0.9rem;
+	}
+	.note {
+		padding: 0.75rem 1rem;
+		background: var(--tint);
+		border-left: 3px solid var(--accent);
+		border-radius: 0 0.3rem 0.3rem 0;
+		font-size: 0.97rem;
+	}
+
+	/* ---------- Footer ---------- */
+	.site-footer {
+		border-top: 1px solid var(--hair);
+		font-family: var(--sans);
+		font-size: 0.85rem;
+		color: var(--muted);
+	}
+	.site-footer .wrap {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem 0.5rem;
+		padding-top: 1.25rem;
+		padding-bottom: 2rem;
+	}
+	.site-footer a {
+		color: var(--muted);
+	}
+
+	/* ---------- Math ---------- */
+	main .katex {
+		font-size: 1.04em;
+	}
 	main .katex-display {
-		margin: 1.25em 0;
+		margin: 1.1em 0;
 		overflow-x: auto;
 		overflow-y: hidden;
-		padding: 0.25em 0;
+		padding: 0.2em 0;
 	}
 	main .katex-display > .katex {
 		white-space: nowrap;
 	}
-	main .katex {
-		font-size: 1.05em;
-	}
 
-	/* --- Theorem / Definition / Remark blocks (blockquotes) --- */
-	main blockquote {
-		margin: 1.25em 0;
-		padding: 0.9em 1.1em;
-		border-left: 3px solid #6366f1;
-		background: rgba(99, 102, 241, 0.06);
-		border-radius: 0 0.4rem 0.4rem 0;
-	}
-	main blockquote p {
-		margin: 0;
-		color: #333;
-		line-height: 1.65;
-	}
-	main blockquote p + p {
-		margin-top: 0.6em;
-	}
-	main blockquote p:first-child strong:first-child {
-		color: #4338ca;
-	}
-
-	/* --- Section headings inside posts --- */
-	main h2 {
-		margin: 2rem 0 0.75rem;
-		padding-bottom: 0.3rem;
-		font-size: 1.35rem;
-		font-weight: 600;
-		color: #1a1a1a;
-		border-bottom: 1px solid #e5e7eb;
-	}
-	main h3 {
-		margin: 1.5rem 0 0.5rem;
-		font-size: 1.15rem;
-		font-weight: 600;
-		color: #333;
-	}
-
-	/* --- Lists --- */
-	main ul, main ol {
-		margin: 0.75em 0;
-		padding-left: 1.5em;
-		color: #444;
-		line-height: 1.65;
-	}
-	main li {
-		margin: 0.3em 0;
-	}
-	main li p {
-		margin: 0;
-	}
-	main blockquote ul,
-	main blockquote ol {
-		margin: 0.5em 0;
-		padding-left: 1.25em;
-	}
-
-	/* --- Tables --- */
-	main table {
-		width: 100%;
-		border-collapse: collapse;
-		margin: 1em 0;
-		font-size: 0.92rem;
-		line-height: 1.5;
-	}
-	main th, main td {
-		padding: 0.45em 0.7em;
-		border: 1px solid #d1d5db;
-		text-align: left;
-		color: #333;
-	}
-	main th {
-		background: rgba(0, 0, 0, 0.04);
-		font-weight: 600;
-	}
-
-	/* --- Inline code --- */
-	main code {
-		font-size: 0.88em;
-		background: rgba(0, 0, 0, 0.06);
-		padding: 0.15em 0.35em;
-		border-radius: 0.25rem;
-		font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
-	}
-	main pre {
-		margin: 1em 0;
-		padding: 1em;
-		overflow-x: auto;
-		background: rgba(0, 0, 0, 0.04);
-		border-radius: 0.5rem;
-	}
-	main pre code {
-		background: none;
-		padding: 0;
-		font-size: 0.88em;
-	}
-
-	/* --- Horizontal rule --- */
-	main hr {
-		margin: 2rem 0;
-		border: none;
-		border-top: 1px solid #e5e7eb;
-	}
-
-	#bgm-btn {
-		position: fixed;
-		bottom: 1.25rem;
-		right: 1.25rem;
-		z-index: 10;
-		padding: 0.5rem 1rem;
-		border: none;
-		border-radius: 2rem;
-		background: rgba(255, 255, 255, 0.15);
-		backdrop-filter: blur(8px);
-		color: rgba(255, 255, 255, 0.85);
-		font-size: 0.85rem;
-		cursor: pointer;
-		transition: background 0.2s;
-	}
-	#bgm-btn:hover {
-		background: rgba(255, 255, 255, 0.25);
-	}
-
-	/* ===== Posts list page ===== */
-	.sort-bar {
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-		margin: 0 0 1.25rem;
-	}
-	.sort-label {
-		font-size: 0.82rem;
-		color: #888;
-		margin-right: 0.15rem;
-	}
-	.sort-btn {
-		padding: 0.2rem 0.65rem;
-		border: 1px solid #d1d5db;
-		border-radius: 999px;
-		background: transparent;
-		color: #666;
-		font-size: 0.78rem;
-		cursor: pointer;
-		transition: background 0.15s, color 0.15s, border-color 0.15s;
-	}
-	.sort-btn:hover {
-		background: rgba(0,0,0,0.05);
-	}
-	.sort-btn.active {
-		background: #4338ca;
-		color: #fff;
-		border-color: #4338ca;
-	}
-	.post-list {
-		margin: 0;
-		padding: 0;
+	/* ---------- Notes list ---------- */
+	.page ul.post-list {
 		list-style: none;
+		margin: 0;
+		padding: 0;
 	}
 	.post-list li {
-		padding: 0.6rem 0;
-		border-bottom: 1px solid #f0f0f0;
+		padding: 0.9rem 0;
+		border-bottom: 1px solid var(--hair);
 	}
 	.post-list li:last-child {
 		border-bottom: none;
 	}
 	.post-list a {
-		display: block;
-		font-weight: 500;
-		color: #1a1a1a;
-		margin-bottom: 0.2rem;
+		font-size: 1.1rem;
+		font-weight: 600;
+		color: var(--ink);
+		text-decoration: none;
 	}
 	.post-list a:hover {
-		color: #4338ca;
+		color: var(--link);
+	}
+	.post-list .desc {
+		margin: 0.2rem 0 0.15rem;
+		color: var(--ink-2);
+		font-size: 0.97rem;
 	}
 	.post-list .dates {
 		display: block;
-		font-size: 0.8rem;
-		color: #888;
-		line-height: 1.4;
-	}
-	.post-list .edited {
-		color: #aaa;
+		font-family: var(--sans);
+		font-size: 0.82rem;
+		color: var(--muted);
 	}
 
-	/* ===== Single post page ===== */
-	.toolbar {
+	/* ---------- Single post ---------- */
+	.post .toolbar {
 		display: flex;
+		flex-wrap: wrap;
 		justify-content: space-between;
 		align-items: center;
-		margin: 0 0 1.5rem;
-		padding-bottom: 0.75rem;
-		border-bottom: 1px solid #e5e7eb;
 		gap: 0.75rem;
-		flex-wrap: wrap;
+		margin: 0.5rem 0 2rem;
+		padding-bottom: 0.9rem;
+		border-bottom: 1px solid var(--hair);
+		font-family: var(--sans);
 	}
 	.post .meta {
 		font-size: 0.9rem;
-		color: #666;
-		line-height: 1.6;
-		flex: 1 1 auto;
+		color: var(--muted);
+		line-height: 1.55;
 	}
 	.post .meta .author {
 		display: block;
-		color: #444;
+		color: var(--ink-2);
 		font-weight: 500;
-	}
-	.post .meta .dates {
-		display: block;
-	}
-	.post .meta .updated {
-		color: #888;
 	}
 	.zoom-ctrl {
 		display: inline-flex;
 		align-items: center;
-		gap: 0;
-		flex-shrink: 0;
-		background: rgba(0,0,0,0.04);
+		border: 1px solid var(--hair);
 		border-radius: 999px;
-		border: 1px solid #e0e0e0;
-		padding: 0.15rem 0.2rem;
+		padding: 0.1rem 0.2rem;
 		user-select: none;
 	}
 	.zoom-ctrl button {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 1.6rem;
-		height: 1.6rem;
+		width: 1.7rem;
+		height: 1.7rem;
 		border: none;
 		border-radius: 50%;
 		background: transparent;
-		color: #555;
+		color: var(--muted);
 		cursor: pointer;
-		transition: background 0.15s, color 0.15s;
 	}
-	.zoom-ctrl button:hover {
-		background: rgba(0,0,0,0.08);
-		color: #222;
+	.zoom-ctrl button:hover:not(:disabled) {
+		background: var(--code-bg);
+		color: var(--ink);
 	}
-	.zoom-ctrl button:active {
-		background: rgba(0,0,0,0.14);
+	.zoom-ctrl button:disabled {
+		opacity: 0.35;
+		cursor: default;
 	}
 	.zoom-ctrl span {
 		min-width: 2.8em;
 		text-align: center;
-		font-size: 0.72rem;
-		color: #666;
+		font-size: 0.75rem;
+		color: var(--muted);
 		font-variant-numeric: tabular-nums;
 	}
-	.body p {
-		margin: 0 0 1em;
-		color: #333;
-		line-height: 1.8;
-		text-align: justify;
+	.post .body h2 {
+		margin: 2.25rem 0 0.75rem;
+		padding-bottom: 0.3rem;
+		font-size: 1.4rem;
+		font-weight: 600;
+		border-bottom: 1px solid var(--hair);
+	}
+	.post .body h3 {
+		margin: 1.6rem 0 0.5rem;
+		font-size: 1.15rem;
+		font-weight: 600;
+	}
+	.post .body p {
+		line-height: 1.75;
 		overflow-wrap: break-word;
 	}
-	.body p:last-child {
-		margin-bottom: 0;
+	@media (min-width: 40rem) {
+		.post .body p {
+			text-align: justify;
+			hyphens: auto;
+		}
 	}
-	.body em {
-		color: #555;
+	.post .body ul,
+	.post .body ol {
+		margin: 0.75em 0;
+		padding-left: 1.5em;
 	}
-	.body strong {
-		color: #1a1a1a;
-		font-weight: 600;
+	.post .body li {
+		margin: 0.3em 0;
 	}
-	.body .katex-display + p {
-		margin-top: 0;
+	.post .body li p {
+		margin: 0;
 	}
-	.body p + .katex-display {
-		margin-top: 0.5em;
+	/* Theorem / definition blocks are written as blockquotes. */
+	.post .body blockquote {
+		margin: 1.25em 0;
+		padding: 0.9em 1.1em;
+		border-left: 3px solid var(--accent);
+		background: var(--tint);
+		border-radius: 0 0.35rem 0.35rem 0;
 	}
-	.body blockquote .katex-display {
+	.post .body blockquote p {
+		margin: 0;
+	}
+	.post .body blockquote p + p {
+		margin-top: 0.6em;
+	}
+	.post .body blockquote .katex-display {
 		margin: 0.75em 0;
 	}
-	.body figure {
-		margin: 1.25rem 0;
-		text-align: center;
+	.post .body table {
+		width: 100%;
+		border-collapse: collapse;
+		margin: 1em 0;
+		font-size: 0.93rem;
+		display: block;
+		overflow-x: auto;
 	}
-	.body figure img {
+	.post .body th,
+	.post .body td {
+		padding: 0.45em 0.7em;
+		border: 1px solid var(--hair);
+		text-align: left;
+	}
+	.post .body th {
+		background: var(--code-bg);
+		font-weight: 600;
+	}
+	.post .body code {
+		font-family: var(--mono);
+		font-size: 0.86em;
+		background: var(--code-bg);
+		padding: 0.12em 0.35em;
+		border-radius: 0.25rem;
+	}
+	.post .body pre {
+		margin: 1em 0;
+		padding: 1em;
+		overflow-x: auto;
+		background: var(--code-bg);
+		border-radius: 0.4rem;
+	}
+	.post .body pre code {
+		background: none;
+		padding: 0;
+	}
+	.post .body hr {
+		margin: 2rem 0;
+		border: none;
+		border-top: 1px solid var(--hair);
+	}
+	.post .body figure {
+		margin: 1.25rem 0;
+	}
+	.post .body img {
 		display: block;
 		max-width: min(100%, 26rem);
-		width: auto;
 		height: auto;
-		margin-inline: auto;
+		margin: 1.25rem auto;
+	}
+	@media (prefers-color-scheme: dark) {
+		/* Charts are drawn black on transparent; give them a light card. */
+		.post .body img {
+			background: #fff;
+			padding: 0.5rem;
+			border-radius: 0.3rem;
+		}
 	}
 	.post .back {
-		margin-top: 2rem;
+		margin-top: 2.5rem;
 		padding-top: 1rem;
-		border-top: 1px solid #e5e7eb;
-	}
-
-	/* ===== Documents page ===== */
-	.ask-row {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-	}
-	.ask-text {
-		flex: 1 1 auto;
-	}
-	.ask-avatar {
-		width: 5.5rem;
-		height: 5.5rem;
-		border-radius: 50%;
-		object-fit: cover;
-		object-position: center 15%;
-		flex-shrink: 0;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-	}
-	.section-title {
-		margin-top: 1.5rem !important;
-		font-weight: 600;
-		color: #1a1a1a;
-	}
-	.notes-topics {
-		margin: 0.5rem 0 0;
-		padding-left: 1.25rem;
-	}
-	.notes-topics .hint {
-		color: #666;
-		font-size: 0.9rem;
-	}
-
-	/* ===== Supersymmetry notes page ===== */
-	.lecture-list {
-		margin: 0;
-		padding-left: 1.25rem;
-	}
-	.lecture-list li {
-		margin: 0.4em 0;
-	}
-	.notes-meta {
-		margin: 0 0 0.75rem;
+		border-top: 1px solid var(--hair);
+		font-family: var(--sans);
 		font-size: 0.95rem;
-		color: #666;
-	}
-	.intro {
-		margin: 0 0 1.25rem;
-		color: #555;
-		font-size: 0.95rem;
-		line-height: 1.6;
 	}
 </style>

@@ -18,14 +18,13 @@ interface Props {
 const { post } = Astro.props;
 const { Content } = await render(post);
 
-const pageTitle = `${post.data.title} | Homological Alice`;
-const dateOpts: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-const formattedPub = post.data.pubDate.toLocaleDateString('en-US', dateOpts);
-const formattedUpd = post.data.updatedDate?.toLocaleDateString('en-US', dateOpts);
-const author = post.data.author ?? 'Homological Alice';
+const dateOpts: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+const formattedPub = post.data.pubDate.toLocaleDateString('en-AU', dateOpts);
+const formattedUpd = post.data.updatedDate?.toLocaleDateString('en-AU', dateOpts);
+const author = post.data.author ?? 'Tianyou Ma';
 ---
 
-<Layout title={pageTitle} contentLayout="reading">
+<Layout title={post.data.title} description={post.data.description} math ogType="article">
 	<article class="post" id="post-article">
 		<h1>{post.data.title}</h1>
 		<div class="toolbar">
@@ -33,55 +32,67 @@ const author = post.data.author ?? 'Homological Alice';
 				<span class="author">{author}</span>
 				<span class="dates">
 					Published {formattedPub}
-					{formattedUpd && <span class="updated"> · Last edited {formattedUpd}</span>}
+					{formattedUpd && <span> · edited {formattedUpd}</span>}
 				</span>
 			</div>
-			<div class="zoom-ctrl" aria-label="Zoom controls">
-				<button id="zoom-out" title="Zoom out">
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+			<div class="zoom-ctrl" role="group" aria-label="Text size">
+				<button type="button" id="zoom-out" aria-label="Smaller text">
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
 				</button>
-				<span id="zoom-val">100%</span>
-				<button id="zoom-in" title="Zoom in">
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+				<span id="zoom-val" aria-live="polite">100%</span>
+				<button type="button" id="zoom-in" aria-label="Larger text">
+					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
 				</button>
 			</div>
 		</div>
 		<div class="body">
 			<Content />
 		</div>
-		<p class="back"><a href="/posts/">← All posts</a></p>
+		<p class="back"><a href="/posts/">← All notes</a></p>
 	</article>
 	<script>
-		document.addEventListener('astro:page-load', () => {
-			const article = document.getElementById('post-article');
-			const main = article?.closest('main') as HTMLElement | null;
-			const label = document.getElementById('zoom-val');
-			const btnIn = document.getElementById('zoom-in');
-			const btnOut = document.getElementById('zoom-out');
-			if (!article || !main || !label || !btnIn || !btnOut) return;
+		const article = document.getElementById('post-article');
+		const main = article?.closest('main') as HTMLElement | null;
+		const label = document.getElementById('zoom-val');
+		const btnIn = document.getElementById('zoom-in') as HTMLButtonElement | null;
+		const btnOut = document.getElementById('zoom-out') as HTMLButtonElement | null;
 
+		if (article && main && label && btnIn && btnOut) {
 			const STEP = 10;
 			const MIN = 70;
 			const MAX = 150;
 			const KEY = 'post-zoom';
-			const BASE_WIDTH = 52;
+			const BASE_WIDTH = 44; // rem, matches --measure
 			const FONT_RATIO = 0.6;
 
-			let pct = parseInt(localStorage.getItem(KEY) || '100', 10);
-			if (pct < MIN || pct > MAX) pct = 100;
+			let pct = 100;
+			try {
+				pct = parseInt(localStorage.getItem(KEY) || '100', 10);
+			} catch {}
+			if (!(pct >= MIN && pct <= MAX)) pct = 100;
 
-			function apply() {
+			const apply = () => {
 				const scale = pct / 100;
 				const fontScale = 1 + (scale - 1) * FONT_RATIO;
-				article!.style.fontSize = (fontScale * 100).toFixed(0) + '%';
-				main!.style.maxWidth = (BASE_WIDTH * scale).toFixed(1) + 'rem';
-				label!.textContent = pct + '%';
-				localStorage.setItem(KEY, String(pct));
-			}
+				article.style.fontSize = (fontScale * 100).toFixed(0) + '%';
+				main.style.maxWidth = (BASE_WIDTH * Math.max(scale, 1)).toFixed(1) + 'rem';
+				label.textContent = pct + '%';
+				btnOut.disabled = pct <= MIN;
+				btnIn.disabled = pct >= MAX;
+				try {
+					localStorage.setItem(KEY, String(pct));
+				} catch {}
+			};
 			apply();
 
-			btnIn.addEventListener('click', () => { pct = Math.min(MAX, pct + STEP); apply(); });
-			btnOut.addEventListener('click', () => { pct = Math.max(MIN, pct - STEP); apply(); });
-		});
+			btnIn.addEventListener('click', () => {
+				pct = Math.min(MAX, pct + STEP);
+				apply();
+			});
+			btnOut.addEventListener('click', () => {
+				pct = Math.max(MIN, pct - STEP);
+				apply();
+			});
+		}
 	</script>
 </Layout>

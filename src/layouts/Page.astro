@@ -1,0 +1,17 @@
+---
+/**
+ * Wrapper for Markdown pages in src/pages (research.md, talks.md, cv.md).
+ * Frontmatter: title, description?, lede?, math?
+ */
+import Layout from './Layout.astro';
+
+const { frontmatter } = Astro.props;
+---
+
+<Layout title={frontmatter.title} description={frontmatter.description} math={frontmatter.math}>
+	<article class="page">
+		<h1>{frontmatter.title}</h1>
+		{frontmatter.lede && <p class="lede">{frontmatter.lede}</p>}
+		<slot />
+	</article>
+</Layout>

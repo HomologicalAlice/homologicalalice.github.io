@@ -3,75 +3,32 @@ import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 
 const dateOpts: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+const fmt = (d: Date) => d.toLocaleDateString('en-AU', dateOpts);
 
-const allPosts = await getCollection('blog');
-
-function effectiveDate(post: (typeof allPosts)[number]) {
-	return post.data.updatedDate ?? post.data.pubDate;
-}
-
-const byEdited = [...allPosts].sort(
-	(a, b) => effectiveDate(b).valueOf() - effectiveDate(a).valueOf(),
-);
-const byPublished = [...allPosts].sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+const posts = (await getCollection('blog')).sort(
+	(a, b) =>
+		(b.data.updatedDate ?? b.data.pubDate).valueOf() - (a.data.updatedDate ?? a.data.pubDate).valueOf(),
 );
 ---
 
-<Layout title="Posts | Homological Alice">
-	<h1>Posts</h1>
-
-	<div class="sort-bar">
-		<span class="sort-label">Sort by</span>
-		<button class="sort-btn active" id="sort-edited">Last edited</button>
-		<button class="sort-btn" id="sort-published">Published</button>
-	</div>
-
-	<ul id="list-edited" class="post-list">
-		{byEdited.map((post) => (
-			<li>
-				<a href={`/posts/${post.id}`}>{post.data.title}</a>
-				<span class="dates">
-					Published {post.data.pubDate.toLocaleDateString('en-US', dateOpts)}
-					{post.data.updatedDate && (
-						<span class="edited"> · Edited {post.data.updatedDate.toLocaleDateString('en-US', dateOpts)}</span>
-					)}
-				</span>
-			</li>
-		))}
-	</ul>
-
-	<ul id="list-published" class="post-list" style="display:none">
-		{byPublished.map((post) => (
-			<li>
-				<a href={`/posts/${post.id}`}>{post.data.title}</a>
-				<span class="dates">
-					Published {post.data.pubDate.toLocaleDateString('en-US', dateOpts)}
-					{post.data.updatedDate && (
-						<span class="edited"> · Edited {post.data.updatedDate.toLocaleDateString('en-US', dateOpts)}</span>
-					)}
-				</span>
-			</li>
-		))}
-	</ul>
-
-	<script>
-		document.addEventListener('astro:page-load', () => {
-			const btnEdited = document.getElementById('sort-edited');
-			const btnPublished = document.getElementById('sort-published');
-			const listEdited = document.getElementById('list-edited');
-			const listPublished = document.getElementById('list-published');
-			if (!btnEdited || !btnPublished || !listEdited || !listPublished) return;
-
-			function activate(active: HTMLElement, inactive: HTMLElement, show: HTMLElement, hide: HTMLElement) {
-				active.classList.add('active');
-				inactive.classList.remove('active');
-				show.style.display = '';
-				hide.style.display = 'none';
-			}
-
-			btnEdited.addEventListener('click', () => activate(btnEdited, btnPublished, listEdited, listPublished));
-			btnPublished.addEventListener('click', () => activate(btnPublished, btnEdited, listPublished, listEdited));
-		});
-	</script>
+<Layout title="Notes" description="Notes and write-ups by Tianyou Ma.">
+	<article class="page">
+		<h1>Notes</h1>
+		<p class="lede">
+			Longer write-ups. From time to time I may also post notes on homological mirror symmetry and
+			geometric invariant theory here.
+		</p>
+		<ul class="post-list">
+			{posts.map((post) => (
+				<li>
+					<a href={`/posts/${post.id}/`}>{post.data.title}</a>
+					{post.data.description && <p class="desc">{post.data.description}</p>}
+					<span class="dates">
+						{fmt(post.data.pubDate)}
+						{post.data.updatedDate && <> · edited {fmt(post.data.updatedDate)}</>}
+					</span>
+				</li>
+			))}
+		</ul>
+	</article>
 </Layout>

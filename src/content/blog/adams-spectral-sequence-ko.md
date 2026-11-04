@@ -2,7 +2,7 @@
 title: "The Adams Spectral Sequence for ko"
 pubDate: 2026-03-29
 updatedDate: 2026-03-31
-description: "A learning-oriented overview of the Adams spectral sequence and the computation of the E_2-page for ko."
+description: "A learning-oriented overview of the Adams spectral sequence and the computation of the E₂-page for ko."
 ---
 
 ## Abstract

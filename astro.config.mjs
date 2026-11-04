@@ -38,6 +38,11 @@ const katexOptions = {
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://homologicalalice.github.io',
+	// Old URLs from the first version of the site.
+	redirects: {
+		'/about': '/personal/',
+		'/documents': '/posts/',
+	},
 	markdown: {
 		remarkPlugins: [remarkMath],
 		rehypePlugins: [[rehypeKatex, katexOptions]],

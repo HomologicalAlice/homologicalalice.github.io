@@ -1,0 +1,255 @@
+---
+/**
+ * The "Homological Alice" look: rotating wallpapers, a frosted card, and music.
+ * Used only by the personal page.
+ */
+interface Props {
+	title?: string;
+}
+const { title = 'Homological Alice' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" style="background:#1a1a2e">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{title}</title>
+		<meta name="description" content="Homological Alice: the personal side of Tianyou Ma." />
+		<link rel="canonical" href={new URL('/personal/', Astro.site)} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Tianyou Ma" />
+		<meta property="og:title" content={title} />
+		<meta property="og:url" content={new URL('/personal/', Astro.site)} />
+		<link rel="preload" href="/images/alice1.avif" as="image" type="image/avif" />
+		<link rel="icon" href="/favicon.ico" sizes="32x32" />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<meta name="generator" content={Astro.generator} />
+	</head>
+	<body>
+		<div id="wallpaper-a" class="wallpaper"></div>
+		<div id="wallpaper-b" class="wallpaper"></div>
+		<header>
+			<nav aria-label="Main">
+				<a href="/">Home</a>
+				<a href="/research/">Research</a>
+				<a href="/talks/">Talks</a>
+				<a href="/posts/">Notes</a>
+				<a href="/cv/">CV</a>
+				<a href="/personal/" aria-current="page">Personal</a>
+			</nav>
+		</header>
+		<main>
+			<slot />
+		</main>
+		<audio id="bgm" src="/audio/bgm.mp3" loop preload="none"></audio>
+		<button id="bgm-btn" type="button" aria-pressed="false">
+			<span aria-hidden="true">&#9835;</span> <span class="lbl">Play music</span>
+		</button>
+		<script>
+			const a = document.getElementById('wallpaper-a') as HTMLDivElement | null;
+			const b = document.getElementById('wallpaper-b') as HTMLDivElement | null;
+			if (a && b) {
+				const wallpapers = [
+					'/images/alice1.avif',
+					'/images/alice2.avif',
+					'/images/alice3.avif',
+					'/images/alice4.avif',
+					'/images/desktop-wallpaper.avif',
+				];
+				let i = 0;
+				let showingA = true;
+
+				const setLayer = (el: HTMLDivElement, url: string) => {
+					el.style.backgroundImage = `url('${url}')`;
+					const img = new Image();
+					img.src = url;
+				};
+
+				const nextWallpaper = () => {
+					document.body.style.backgroundImage = `url('${wallpapers[i]}')`;
+					i = (i + 1) % wallpapers.length;
+					const front = showingA ? a : b;
+					const back = showingA ? b : a;
+					back.style.transition = 'none';
+					back.style.opacity = '0';
+					setLayer(back, wallpapers[i]);
+					void back.offsetWidth;
+					back.style.transition = 'opacity 1.5s ease-in-out';
+					back.style.opacity = '1';
+					setTimeout(() => {
+						front.style.opacity = '0';
+					}, 100);
+					showingA = !showingA;
+				};
+
+				setLayer(a, wallpapers[i]);
+				a.style.opacity = '1';
+				b.style.opacity = '0';
+
+				// Rotate on a timer unless the visitor asked for reduced motion; clicking the background always works.
+				const autoRotate = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+				let timer = autoRotate ? setInterval(nextWallpaper, 30_000) : undefined;
+				document.addEventListener('click', (e) => {
+					if ((e.target as HTMLElement).closest('a, button, main')) return;
+					clearInterval(timer);
+					nextWallpaper();
+					if (autoRotate) timer = setInterval(nextWallpaper, 30_000);
+				});
+			}
+
+			const audio = document.getElementById('bgm') as HTMLAudioElement | null;
+			const btn = document.getElementById('bgm-btn');
+			const lbl = btn?.querySelector('.lbl');
+			if (audio && btn && lbl) {
+				const updateBtn = () => {
+					lbl.textContent = audio.paused ? 'Play music' : 'Pause music';
+					btn.setAttribute('aria-pressed', String(!audio.paused));
+				};
+				updateBtn();
+				btn.addEventListener('click', () => {
+					if (audio.paused) {
+						audio.play().then(updateBtn).catch(() => {});
+					} else {
+						audio.pause();
+						updateBtn();
+					}
+				});
+			}
+		</script>
+	</body>
+</html>
+
+<style is:global>
+	html {
+		min-height: 100%;
+	}
+	body {
+		margin: 0;
+		min-height: 100vh;
+		font-family: system-ui, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+		background: url('/images/alice1.avif') center/cover no-repeat fixed;
+		background-color: #1a1a2e;
+	}
+	.wallpaper {
+		position: fixed;
+		inset: 0;
+		z-index: 1;
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		opacity: 0;
+		transition: opacity 1.5s ease-in-out;
+		will-change: opacity;
+	}
+	body::before {
+		content: '';
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.3);
+		z-index: 2;
+		pointer-events: none;
+	}
+	header {
+		position: relative;
+		z-index: 3;
+		padding: 1.25rem 1rem;
+	}
+	nav {
+		display: flex;
+		gap: 0.5rem 1.5rem;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+	nav a {
+		color: rgba(255, 255, 255, 0.85);
+		text-decoration: none;
+		font-size: 0.95rem;
+		letter-spacing: 0.02em;
+	}
+	nav a:hover,
+	nav a[aria-current='page'] {
+		color: #fff;
+	}
+	main {
+		position: relative;
+		z-index: 3;
+		max-width: 38rem;
+		margin: 2rem auto 3rem;
+		padding: 2.5rem 2.5rem 3rem;
+		background: rgba(255, 255, 255, 0.8);
+		border-radius: 1rem;
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+		-webkit-backdrop-filter: blur(6px);
+		backdrop-filter: blur(6px);
+	}
+	@media (max-width: 40rem) {
+		main {
+			margin: 1rem 1rem 3rem;
+			padding: 1.75rem 1.25rem 2rem;
+		}
+	}
+	main h1 {
+		margin: 0 0 0.75rem;
+		font-size: 1.75rem;
+		font-weight: 600;
+		color: #1a1a1a;
+	}
+	main p {
+		margin: 0;
+		color: #444;
+		line-height: 1.7;
+	}
+	main p + p {
+		margin-top: 1em;
+	}
+	main a {
+		color: #2563eb;
+		text-decoration: none;
+	}
+	main a:hover {
+		text-decoration: underline;
+	}
+	.ask-row {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-bottom: 1em;
+	}
+	.ask-row p {
+		flex: 1 1 auto;
+	}
+	.ask-avatar {
+		width: 5.5rem;
+		height: 5.5rem;
+		border-radius: 50%;
+		object-fit: cover;
+		object-position: center 15%;
+		flex-shrink: 0;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	}
+	#bgm-btn {
+		position: fixed;
+		bottom: 1.25rem;
+		right: 1.25rem;
+		z-index: 10;
+		padding: 0.5rem 1rem;
+		border: none;
+		border-radius: 2rem;
+		background: rgba(0, 0, 0, 0.55);
+		-webkit-backdrop-filter: blur(8px);
+		backdrop-filter: blur(8px);
+		color: #fff;
+		font-size: 0.85rem;
+		cursor: pointer;
+		transition: background 0.2s;
+	}
+	#bgm-btn:hover {
+		background: rgba(0, 0, 0, 0.7);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.wallpaper {
+			transition: none;
+		}
+	}
+</style>

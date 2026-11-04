@@ -1,46 +1,28 @@
-# Astro Starter Kit: Basics
+# homologicalalice.github.io
+
+Personal academic website of Tianyou Ma, built with [Astro](https://astro.build) and deployed to
+GitHub Pages by `.github/workflows/deploy.yml` on every push to `main`.
+
+## Where things are
+
+| Page | File |
+| :--- | :--- |
+| Home | `src/pages/index.astro` |
+| Research (preprint, thesis) | `src/pages/research.md` |
+| Talks | `src/pages/talks.md` |
+| CV (links, education, awards) | `src/pages/cv.md`; the PDF is `public/files/Tianyou_Ma_CV.pdf` |
+| Notes | posts in `src/content/blog/*.md` |
+| Personal (wallpapers, music) | `src/pages/personal.astro` with `src/layouts/AliceLayout.astro` |
+
+Academic pages share `src/layouts/Layout.astro`; the Markdown pages go through
+`src/layouts/Page.astro`. Math in Markdown is rendered with KaTeX (macros in `astro.config.mjs`).
+
+Do not commit private documents (transcripts, unpublished drafts): this repository is public.
+
+## Commands
 
 ```sh
-npm create astro@latest -- --template basics
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # output in ./dist
 ```
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
-
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
