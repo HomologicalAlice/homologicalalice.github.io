@@ -7,9 +7,9 @@ description: Curriculum vitae and academic record of Tianyou Ma.
 # The transcript itself is deliberately not stored in this public repository.
 ---
 
-- [Curriculum vitae (PDF)](/files/Tianyou_Ma_CV.pdf), Oct 2026.
+- [Curriculum vitae (PDF)](/files/Tianyou_Ma_CV.pdf), Nov 2026.
 - Academic transcript: available on request at [u7902950@anu.edu.au](mailto:u7902950@anu.edu.au).
-- Honours thesis: [abstract and contents](/research/#honours-thesis).
+- Honours thesis: [PDF](/files/thesis/chromatic-kirwan-theory.pdf), [abstract and contents](/research/#honours-thesis).
 
 ## Education
 
@@ -20,7 +20,7 @@ description: Curriculum vitae and academic record of Tianyou Ma.
 
 ## Awards
 
-- <span class="date">2026</span> SMRI Summer School Grant, Sydney Mathematical Research Institute.
+- <span class="date">2026</span> AustMS Student Support Scheme Grant, Australian Mathematical Society.
 - <span class="date">2025</span> Outstanding Undergraduate Thesis Award, Shandong University: the highest mark in the department (1 of 80).
 - <span class="date">2025</span> AMSI Summer School Grant.
 - <span class="date">2024</span> Dean’s International Science Excellence Scholarship, ANU College of Science.

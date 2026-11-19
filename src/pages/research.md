@@ -15,9 +15,9 @@ For compact Hamiltonian torus actions that are free on the zero level, we show t
 ## Honours thesis
 
 <p class="work-title">Chromatic Kirwan Theory</p>
-<p class="work-meta">BSc (Honours) thesis, Australian National University, 2026 · Supervisor: Brett Parker · Submitted Oct 2026, results expected Dec 2026</p>
+<p class="work-meta">BSc (Honours) thesis, Australian National University, 2026 · Supervisor: Brett Parker · Submitted Oct 2026, results expected Dec 2026 · <a href="/files/thesis/chromatic-kirwan-theory.pdf">PDF</a></p>
 
-<p class="note">I will post the full thesis here once the paper based on its last chapter is on arXiv. Until then I am happy to send it to anyone who asks: <a href="mailto:u7902950@anu.edu.au">u7902950@anu.edu.au</a>. Chapter 1 is already online: <a href="/posts/equivariant-cohomology/">Equivariant Cohomology</a>.</p>
+<p class="note">The full thesis is the version submitted in October 2026. Chapter 1 can also be read page by page here: <a href="/posts/equivariant-cohomology/">Equivariant Cohomology</a>.</p>
 
 ### Abstract
 
