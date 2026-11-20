@@ -39,12 +39,36 @@ Most of the thesis is a detailed account of Kirwan theory over $\mathbb{Q}$. It 
 
 ### Contents
 
-0. Introduction
-1. **[Equivariant Cohomology](/posts/equivariant-cohomology/).** The Borel construction; genuine and Borel equivariance; Borel–Moore homology and Euler classes; complex projective space; the Cartan model and localisation; fixed points and GKM theory.
-2. **Kirwan Theory.** Moment maps, convexity and reduction; Kirwan surjectivity: the idea; Morse theory of the norm-square; the Atiyah–Bott lemma; rings as spaces; the algebraic geometry behind Kirwan theory; Tolman–Weitsman’s kernel expression; polygon spaces; the integral question.
-3. **Chromatic Kirwan Theory.** Morava $K$-theory and its Euler classes; the Atiyah–Bott lemma in Morava $K$-theory; integral Kirwan surjectivity; integral Kirwan kernel; there should be a chromatic Kirwan theory.
+Each link opens the full thesis at that page.
 
-Appendices on Morava $K$-theory and on the Atiyah–Hirzebruch spectral sequence, and a disclosure of AI use.
+- [Introduction](/files/thesis/chromatic-kirwan-theory.pdf#page=21)
+- [1. Equivariant Cohomology](/files/thesis/chromatic-kirwan-theory.pdf#page=27)
+  - [1.1 The Borel construction](/files/thesis/chromatic-kirwan-theory.pdf#page=27)
+  - [1.2 Genuine and Borel equivariance](/files/thesis/chromatic-kirwan-theory.pdf#page=34)
+  - [1.3 Borel–Moore homology and Euler classes](/files/thesis/chromatic-kirwan-theory.pdf#page=37)
+  - [1.4 Complex projective space](/files/thesis/chromatic-kirwan-theory.pdf#page=45)
+  - [1.5 The Cartan model and localisation](/files/thesis/chromatic-kirwan-theory.pdf#page=48)
+  - [1.6 Fixed points and GKM theory](/files/thesis/chromatic-kirwan-theory.pdf#page=54)
+- [2. Kirwan Theory](/files/thesis/chromatic-kirwan-theory.pdf#page=63)
+  - [2.1 Moment maps, convexity and reduction](/files/thesis/chromatic-kirwan-theory.pdf#page=63)
+  - [2.2 Kirwan surjectivity: the idea](/files/thesis/chromatic-kirwan-theory.pdf#page=65)
+  - [2.3 Morse theory of the norm-square](/files/thesis/chromatic-kirwan-theory.pdf#page=69)
+  - [2.4 The Atiyah–Bott lemma](/files/thesis/chromatic-kirwan-theory.pdf#page=75)
+  - [2.5 Rings as spaces](/files/thesis/chromatic-kirwan-theory.pdf#page=77)
+  - [2.6 The algebraic geometry behind Kirwan theory](/files/thesis/chromatic-kirwan-theory.pdf#page=81)
+  - [2.7 Tolman–Weitsman’s kernel expression](/files/thesis/chromatic-kirwan-theory.pdf#page=87)
+  - [2.8 Polygon spaces](/files/thesis/chromatic-kirwan-theory.pdf#page=95)
+  - [2.9 The integral question](/files/thesis/chromatic-kirwan-theory.pdf#page=100)
+- [3. Chromatic Kirwan Theory](/files/thesis/chromatic-kirwan-theory.pdf#page=103)
+  - [3.1 Morava $K$-theory and its Euler classes](/files/thesis/chromatic-kirwan-theory.pdf#page=104)
+  - [3.2 The Atiyah–Bott lemma in Morava $K$-theory](/files/thesis/chromatic-kirwan-theory.pdf#page=106)
+  - [3.3 Integral Kirwan surjectivity](/files/thesis/chromatic-kirwan-theory.pdf#page=108)
+  - [3.4 Integral Kirwan kernel](/files/thesis/chromatic-kirwan-theory.pdf#page=110)
+  - [3.5 There should be a chromatic Kirwan theory](/files/thesis/chromatic-kirwan-theory.pdf#page=116)
+- [Appendix A. Morava $K$-theory](/files/thesis/chromatic-kirwan-theory.pdf#page=117)
+- [Appendix B. The Atiyah–Hirzebruch spectral sequence](/files/thesis/chromatic-kirwan-theory.pdf#page=119)
+- [Appendix C. Disclosure of AI use](/files/thesis/chromatic-kirwan-theory.pdf#page=121)
+- [Bibliography](/files/thesis/chromatic-kirwan-theory.pdf#page=123)
 
 ## Undergraduate thesis
 
