@@ -25,7 +25,7 @@ Research, current work and theses are on the [Research](/research/) page, talks 
 - <span class="date">Sep 2021 – Jun 2025</span> **Shandong University**, BSc in Mathematics (ANU joint pathway). Credit-weighted average 96.08/100 in upper-level mathematics courses (years 3–4).
 - <span class="date">Sep 2026</span> **GRE Mathematics Subject Test**, score 970/990.
 
-## Awards
+## Awards and honours
 
 - <span class="date">2026</span> **AustMS Student Support Scheme Grant**, travel and accommodation as a speaker.
 - <span class="date">2025</span> **Outstanding Undergraduate Thesis Award**, highest mark in the department (1/80), Shandong University.
