@@ -22,7 +22,7 @@ Research, current work and theses are on the [Research](/research/) page, talks 
 
 - <span class="date">Jul 2025 – Dec 2026</span> **Australian National University**, BSc (Honours) in Mathematics. Supervisor: Brett Parker. GPA 6.81/7 including Semester 2, 2026 results (final results and WAM on 3 December 2026).
 - <span class="date">Jul 2024 – Jun 2025</span> **Australian National University**, BSc in Mathematics. WAM 84.75/100, GPA 6.75/7.
-- <span class="date">Sep 2021 – Jun 2025</span> **Shandong University**, BSc in Mathematics (ANU joint pathway). Credit-weighted average 96.08/100 in upper-level mathematics courses (years 3–4).
+- <span class="date">Sep 2021 – Jun 2025</span> **Shandong University**, BSc in Mathematics (ANU joint pathway). Credit-weighted average 96.08/100 in upper-level mathematics courses (years 3–4). I transferred to ANU in July 2024 after meeting all Shandong graduation requirements except the thesis. I submitted it in 2025 and graduated.
 - <span class="date">Sep 2026</span> **GRE Mathematics Subject Test**, score 970/990.
 
 ## Awards and honours
