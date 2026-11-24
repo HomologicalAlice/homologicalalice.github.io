@@ -36,7 +36,7 @@ Awards for my ANU Honours year are decided after final results on 3 December 202
 
 ## Conferences and workshops
 
-- <span class="date">Nov – Dec 2026</span> **70th Annual Meeting of the Australian Mathematical Society**, University of Western Australia, Perth (speaker, upcoming), with the AustMS Early Career Workshop.
+- <span class="date">Nov – Dec 2026</span> **70th Annual Meeting of the Australian Mathematical Society**, University of Western Australia, Perth (speaker), with the AustMS Early Career Workshop.
 - <span class="date">Oct 2026</span> **Geometric Representation Theory and 3d Mirror Symmetry**, SLMath (online).
 - <span class="date">Sep – Oct 2026</span> **Workshop on Lagrangian Floer Theory and Applications**, Harvard CMSA (online).
 - <span class="date">Nov – Dec 2025</span> **Gauge Theory and String Geometry Workshop**, ANU.
