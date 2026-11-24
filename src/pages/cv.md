@@ -5,14 +5,14 @@ description: Curriculum vitae and academic record of Tianyou Ma.
 # Transcript: once the shared link exists, replace the "Academic transcript" line below with
 #   - [Academic transcript (ANU)](https://LINK-TO-SHARED-FILE)
 # The transcript itself is deliberately not stored in this public repository.
-# This page follows the PDF CV (local tex, 23 Nov 2026). After 3 Dec 2026, replace the Honours
+# This page follows the PDF CV (local tex, 25 Nov 2026). After 3 Dec 2026, replace the Honours
 # "3 December 2026" wording here, on the Research page and in the PDF with the actual results,
 # and update or remove the line under Awards about the Honours year.
 # Course writings: since 23 Nov 2026 the Seifert and information geometry reports are on Notes (the CV points
 # there). The symplectic blow-ups report is in the PDF only and is deliberately not posted here.
 ---
 
-- [Curriculum vitae (PDF)](/files/Tianyou_Ma_CV.pdf), up to date as of 23 November 2026.
+- [Curriculum vitae (PDF)](/files/Tianyou_Ma_CV.pdf), up to date as of 25 November 2026.
 - Academic transcript: available on request at [u7902950@anu.edu.au](mailto:u7902950@anu.edu.au).
 - Honours thesis: [PDF](/files/thesis/chromatic-kirwan-theory.pdf), [abstract and contents](/research/#honours-thesis).
 
@@ -47,6 +47,10 @@ Awards for my ANU Honours year are decided after final results on 3 December 202
 - <span class="date">2025 – 26</span> **Homological Mirror Symmetry**, advanced course by Yixuan Li, ANU, on wrapped Fukaya categories, Fukaya–Seidel categories and enumerative mirror symmetry.
 - <span class="date">Sem. 1, 2026</span> **Supersymmetry, Localisation, and Instanton Counting**, special course run by Bai-Ling Wang and Yixuan Li, ANU, on Witten’s supersymmetric localisation, GIT and its physical interpretation.
 - <span class="date">Jan 2025</span> **AMSI Summer School**, *Algebraic Knot Theory*, Sydney (funded).
+
+## Teaching
+
+- <span class="date">Sem. 1, 2027 (expected)</span> **Demonstrator (tutor)**, MATH3342/6205 Advanced Differential Geometry, Mathematical Sciences Institute, ANU.
 
 ## Languages
 
