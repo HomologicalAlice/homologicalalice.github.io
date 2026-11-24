@@ -50,7 +50,7 @@ Awards for my ANU Honours year are decided after final results on 3 December 202
 
 ## Teaching
 
-- <span class="date">Sem. 1, 2027 (expected)</span> **Demonstrator (tutor)**, MATH3342/6205 Advanced Differential Geometry, Mathematical Sciences Institute, ANU.
+- <span class="date">Sem. 1, 2027 (scheduled)</span> **Demonstrator (tutor)**, MATH3342/6205 Advanced Differential Geometry, Mathematical Sciences Institute, ANU.
 
 ## Languages
 
